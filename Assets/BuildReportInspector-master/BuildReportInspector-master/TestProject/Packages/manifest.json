@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "com.unity.build-report-inspector": "file:../../com.unity.build-report-inspector"
-  },
-  "testables": [
-    "com.unity.build-report-inspector"
-  ]
-}

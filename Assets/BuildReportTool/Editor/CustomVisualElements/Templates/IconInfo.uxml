@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="IconText" style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: flex-start;">
+        <ui:VisualElement name="Icon" style="flex-grow: 1; max-width: 32px; max-height: 32px; width: 32px; height: 32px; align-self: center; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Icons/Core/Success.png?fileID=2800000&amp;guid=4a5f53b6136301f4cacb041b80f8256b&amp;type=3#Success&quot;); margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
+        <ui:Label tabindex="-1" text="25 GB" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Value" style="-unity-text-align: middle-left; font-size: 18px;" />
+    </ui:VisualElement>
+</ui:UXML>

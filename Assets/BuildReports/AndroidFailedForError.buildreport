@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!641289076 &-3703787206436498108
+AudioBuildInfo:
+  m_IsAudioDisabled: 0
+  m_AudioClipCount: 0
+  m_AudioMixerCount: 0
+--- !u!382020655 &-6602642904692953
+PluginBuildInfo:
+  m_RuntimePlugins:
+  - Unity.VisualScripting.Antlr3.Runtime
+  - nunit.framework
+  m_EditorPlugins:
+  - Unity.VisualScripting.sqlite3
+  - Unity.Plastic.Newtonsoft.Json
+  - Unity.Plastic.Antlr3.Runtime
+  - Unity.VisualScripting.YamlDotNet
+  - Unity.VisualScripting.TextureAssets
+  - zlib64Plastic
+  - Unity.VisualScripting.IonicZip
+  - liblz4Plastic
+  - JetBrains.Rider.PathLocator
+  - log4netPlastic
+  - lz4x64Plastic
+  - ReportGeneratorMerged
+  - unityplastic
+  - AppleEventIntegration
+--- !u!1125 &1
+BuildReport:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AndroidFailedForError
+  m_Summary:
+    buildStartTime:
+      serializedVersion: 2
+      ticks: 638618588738743407
+    buildGUID: 00000000000000000000000000000000
+    platformName: Android
+    platformGroupName: Android
+    subtarget: 0
+    options: 262152
+    assetBundleOptions: 0
+    outputPath: C:/Projects/Unity Projects/BuildReport/Builds/android/t1.apk
+    crc: 0
+    totalSize: 0
+    totalTimeTicks: 125368473
+    totalErrors: 6
+    totalWarnings: 0
+    buildType: 1
+    buildResult: 2
+  m_Files: []
+  m_BuildSteps:
+  - stepName: Build player
+    durationTicks: 125368473
+    depth: 0
+    messages: []
+  - stepName: Preprocess Player
+    durationTicks: 119508
+    depth: 1
+    messages: []
+  - stepName: Prepare For Build
+    durationTicks: 44561826
+    depth: 1
+    messages: []
+  - stepName: ProducePlayerScriptAssemblies
+    durationTicks: 79907026
+    depth: 1
+    messages: []
+  - stepName: Prebuild Cleanup and Recompile
+    durationTicks: 69552759
+    depth: 2
+    messages: []
+  - stepName: Compile scripts
+    durationTicks: 69429940
+    depth: 3
+    messages:
+    - type: 0
+      content: 'Assets\BuildReportTool\BuildReportExtracter.cs(6,19): error CS0234:
+        The type or namespace name ''Build'' does not exist in the namespace ''UnityEditor''
+        (are you missing an assembly reference?)'
+    - type: 0
+      content: 'Assets\BuildReportTool\NewBehaviourScript.cs(3,19): error CS0234:
+        The type or namespace name ''Build'' does not exist in the namespace ''UnityEditor''
+        (are you missing an assembly reference?)'
+    - type: 0
+      content: 'Assets\BuildReportTool\NewBehaviourScript.cs(9,22): error CS0246:
+        The type or namespace name ''BuildReport'' could not be found (are you missing
+        a using directive or an assembly reference?)'
+    - type: 0
+      content: 'Assets\BuildReportTool\BuildReportExtracter.cs(14,30): error CS0246:
+        The type or namespace name ''BuildReport'' could not be found (are you missing
+        a using directive or an assembly reference?)'
+    - type: 0
+      content: 'Assets\BuildReportTool\BuildReportExtracter.cs(13,20): error CS0246:
+        The type or namespace name ''BuildSummary'' could not be found (are you missing
+        a using directive or an assembly reference?)'
+    - type: 0
+      content: Error building Player because scripts had compiler errors
+  m_Appendices:
+  - {fileID: -6602642904692953}
+  - {fileID: -3703787206436498108}
+  - {fileID: 2768721427381840996}
+--- !u!1521398425 &2768721427381840996
+VideoBuildInfo:
+  m_VideoClipCount: 0
+  m_IsVideoModuleDisabled: 0

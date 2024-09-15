@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="Base" style="flex-grow: 1;">
+        <uie:Toolbar name="ContentType_Toolbar" style="justify-content: center;">
+            <uie:ToolbarButton text="Steps" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BuildSteps_ToolbarBtn" style="margin-right: 5px; margin-left: 5px;" />
+            <uie:ToolbarButton text="Assets" parse-escape-sequences="true" display-tooltip-when-elided="true" name="PackedAssets_ToolbarBtn" tabindex="1" style="margin-right: 5px; margin-left: 5px;" />
+        </uie:Toolbar>
+        <ui:VisualElement name="Content" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

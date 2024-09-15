@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="InfoText" style="flex-grow: 1; flex-direction: row; justify-content: space-between;">
+        <ui:Label tabindex="-1" text="Build Size :" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+        <ui:Label tabindex="-1" text="25 GB" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Value" />
+    </ui:VisualElement>
+</ui:UXML>

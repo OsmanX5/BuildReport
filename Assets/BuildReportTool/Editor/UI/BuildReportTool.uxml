@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/BuildReportTool/Editor/UI/BuildReportTool.uss?fileID=7433441132597879392&amp;guid=4905ddb15f31a8d42b9f3f0ec251bef9&amp;type=3#BuildReportTool" />
+    <ui:VisualElement name="root" style="flex-grow: 1;">
+        <ui:VisualElement name="Header" style="flex-grow: 0; flex-shrink: 0;">
+            <ui:Label tabindex="-1" text="Build Report Tool" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Titel" style="align-self: center;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Body_VE" style="flex-grow: 1;">
+            <uie:ObjectField label="Object Field" type="UnityEditor.Build.Reporting.BuildReport, UnityEditor.CoreModule" name="BuildReport_ObjectField" allow-scene-objects="false" style="flex-shrink: 1;" />
+            <ui:VisualElement name="BuildReportContent_VE" style="flex-basis: auto; flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Footer" style="flex-grow: 0; justify-content: flex-end; flex-shrink: 0;">
+            <ui:Label tabindex="-1" text="Develpoed By Osman Elfaki" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EndLine" style="align-self: center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

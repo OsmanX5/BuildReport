@@ -1,0 +1,16 @@
+.custom-label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(68, 138, 255);
+}
+
+.LableIcon64 {
+    flex-grow: 1;
+    width: 64px;
+    height: auto;
+    max-width: 64px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
