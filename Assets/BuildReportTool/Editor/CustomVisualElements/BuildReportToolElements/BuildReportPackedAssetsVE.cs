@@ -1,6 +1,4 @@
-using Codice.CM.SEIDInfo;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,39 +11,193 @@ public class BuildReportPackedAssetsVE : VisualElement
 {
 	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportPackedAssetsVE.uxml";
 	const string packedAssetInfoItemVEpath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/PackedAssetInfoItemVE.uxml";
-	PackedAssetInfo[] allAssetsInfos;
+	AssetsInfoLogic assetsInfoLogic;
+	
 	ListView packedAssets_ListView;
+	RadioButtonGroup SortBy_RadioBtnGroup;
+	GroupBox TypesToShowChecks_GroupBox;
+	Button SelecAll_Btn;
+	Button SelectNone_Btn;
+
+	Dictionary<Toggle, Type> TopTypeFilterToggels;
+	Toggle othersCheck_Toggle;
+	Slider MinAssetSize_Slider;
+	Label MinAssetSize_Label;
+
+	HashSet<Type> selectedFilters;
+	SortByType sortBy = SortByType.Size;
+	float MinSizeInMB => MinAssetSize_Slider.value;
 	public BuildReportPackedAssetsVE(PackedAssets[] packedAssets)
 	{
-		allAssetsInfos = packedAssets.SelectMany(x => x.contents).OrderBy(info => 0 - info.packedSize).ToArray();
+		assetsInfoLogic =new (packedAssets);
 	}
+
 	public VisualElement GetVE()
 	{
 		VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
 		VisualElement result = new VisualElement();
 		visualTree.CloneTree(result);
 		QueryVisualElements(result);
-		SetPackedAssetsInfo(allAssetsInfos);
+		CreateOptionesPanel();
+		RegisterEvents();
+		UpdateToShowItem();
 		return result.Children().ToList()[0];
 	}
+
+
+
 	public void QueryVisualElements(VisualElement baseVE)
 	{
 		packedAssets_ListView = baseVE.Q<ListView>(nameof(packedAssets_ListView));
-		if (packedAssets_ListView == null) {
-			Debug.Log("packedAssets_ListView is null");
+		SortBy_RadioBtnGroup = baseVE.Q<RadioButtonGroup>(nameof(SortBy_RadioBtnGroup));
+		TypesToShowChecks_GroupBox = baseVE.Q<GroupBox>(nameof(TypesToShowChecks_GroupBox));
+		SelecAll_Btn = baseVE.Q<Button>(nameof(SelecAll_Btn));
+		SelectNone_Btn = baseVE.Q<Button>(nameof(SelectNone_Btn));
+		MinAssetSize_Slider = baseVE.Q<Slider>(nameof(MinAssetSize_Slider));
+		MinAssetSize_Label = baseVE.Q<Label>(nameof(MinAssetSize_Label));
+	}
+	private void CreateOptionesPanel()
+	{
+		CreateSortByItems();
+		CreateShowOnlyChecks();
+	}
+	private void CreateSortByItems()
+	{
+		SortBy_RadioBtnGroup.choices = sortByDict.Keys.Select(x => sortByDict[x].ToString()).ToList();
+		SortBy_RadioBtnGroup.value = 0;
+	}
+	private void CreateShowOnlyChecks()
+	{
+		TopTypeFilterToggels = new Dictionary<Toggle, Type>();
+		Dictionary<Type,TypeInfoData> topTypesToShow = assetsInfoLogic.TopTypesInfoData;
+		foreach (var typeToShowData in topTypesToShow)
+		{
+			Type type = typeToShowData.Key;
+			TypeInfoData typeInfoData = typeToShowData.Value;
+
+			Toggle typeCheck_Toggle = new Toggle();
+			CreateTypeFilterCheckBoxVE(typeCheck_Toggle, type, typeInfoData);
+			TopTypeFilterToggels.Add(typeCheck_Toggle, type);
+		}
+		
+		othersCheck_Toggle = new Toggle();
+		CreateTypeFilterCheckBoxVE(othersCheck_Toggle, null, assetsInfoLogic.OtherTypesInfosData);
+		
+
+		VisualElement CreateTypeFilterCheckBoxVE(Toggle typeCheck_Toggle, Type? type, TypeInfoData typeInfoData)
+		{
+			string typeName = type == null ? "Others" : type.Name;
+
+			VisualElement TypeFilterCheckBoxVE = new();
+			TypeFilterCheckBoxVE.style.flexDirection = FlexDirection.Row;
+
+			typeCheck_Toggle.text = $"{typeName}({typeInfoData.numberOfAssets})";
+			typeCheck_Toggle.value = true;
+			typeCheck_Toggle.style.flexGrow = 1;
+			TypeFilterCheckBoxVE.Add(typeCheck_Toggle);
+
+			Label typeSize = new($"{typeInfoData.totalSize.FormatSize()}");
+
+			TypeFilterCheckBoxVE.Add(typeSize);
+			TypesToShowChecks_GroupBox.Add(TypeFilterCheckBoxVE);
+
+			return TypeFilterCheckBoxVE;
+
 		}
 	}
+
+	public void RegisterEvents()
+	{
+		SortBy_RadioBtnGroup.RegisterValueChangedCallback(OnSortByRadioBtnGroupChanged);
+		
+		foreach(Toggle checkToggle in TopTypeFilterToggels.Keys)
+			checkToggle.RegisterCallback<ChangeEvent<bool>>(OnFilterCheckedChange);
+		othersCheck_Toggle.RegisterCallback<ChangeEvent<bool>>(OnFilterCheckedChange);
+
+		SelecAll_Btn.clicked += OnSelectAllBtnClicked;
+		SelectNone_Btn.clicked += OnSelectNoneBtnClicked;
+
+		MinAssetSize_Slider.lowValue = assetsInfoLogic.MinAssetSizeInMB;
+		MinAssetSize_Slider.highValue = assetsInfoLogic.MaxAssetSizeInMB;
+		MinAssetSize_Slider.RegisterValueChangedCallback(OnMinAssetSizeSliderValueChanged);
+	}
+
+	private void OnMinAssetSizeSliderValueChanged(ChangeEvent<float> evt)
+	{
+		MinAssetSize_Label.text = $"{evt.newValue} MB";
+		UpdateToShowItem();
+	}
+
+	private void OnSelectAllBtnClicked()
+	{
+		foreach(var toggle in TopTypeFilterToggels)
+		{
+			toggle.Key.value = true;
+		}
+		othersCheck_Toggle.value = true;
+	}
+	private void OnSelectNoneBtnClicked()
+	{
+		foreach (var toggle in TopTypeFilterToggels)
+		{
+			toggle.Key.value = false;
+		}
+		othersCheck_Toggle.value = false;
+	}
+
+
+
+	private void OnFilterCheckedChange(ChangeEvent<bool> evt)
+	{
+		UpdateToShowItem();
+	}
+	void UpdateSelectedFilters()
+	{
+		selectedFilters = new HashSet<Type>();
+		foreach (var toggle in TopTypeFilterToggels)
+		{
+			if (toggle.Key.value == true)
+				selectedFilters.Add(toggle.Value);
+		}
+		//Debug
+	}
+
+	private void OnSortByRadioBtnGroupChanged(ChangeEvent<int> evt)
+	{
+		sortBy = sortByDict[evt.newValue];
+		UpdateToShowItem();
+	}
+	
 	void SetPackedAssetsInfo(PackedAssetInfo[] assetsInfos)
 	{
 		packedAssets_ListView.itemsSource = assetsInfos;
+		
 		packedAssets_ListView.makeItem = packedAssetListViewItemCreator;
 		packedAssets_ListView.bindItem = packedAssetListViewItemBinder;
+
+		packedAssets_ListView.itemsChosen += OnAssetFromListViewChosen;
 	}
 
+	private void OnAssetFromListViewChosen(IEnumerable<object> enumerable)
+	{
+		foreach (PackedAssetInfo info in enumerable)
+		{
+			EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(info.sourceAssetPath));
+		}
+	}
+
+	private VisualElement packedAssetListViewItemCreator()
+	{
+		VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(packedAssetInfoItemVEpath);
+		if (visualTree == null)
+		{
+			Debug.Log("packedAssetInfoItemVEpath is null");
+		}
+		return visualTree.Instantiate().Children().First();
+	}
 	private void packedAssetListViewItemBinder(VisualElement element, int index)
 	{
 		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
-		element.style.height = 42;
 		Label SizeVE = element.Q<Label>("Size");
 		SizeVE.text = info.packedSize.FormatSize();
 
@@ -53,29 +205,45 @@ public class BuildReportPackedAssetsVE : VisualElement
 		NameVE.text = Path.GetFileName(info.sourceAssetPath);
 		VisualElement IconVE = element.Q<VisualElement>("Icon");
 		Texture2D icon = IconsLibrary.Instance.Core.GetIcon("Unknown");
-		if (info.type == typeof(UnityEngine.Texture2D) || info.type == typeof(Sprite))
-			icon = IconsLibrary.Instance.Types.GetIcon("Texture");
-		else if (info.type == typeof(MonoScript))
-			icon = IconsLibrary.Instance.Types.GetIcon("Script");
-		else if (info.type == typeof(Material))
-			icon = IconsLibrary.Instance.Types.GetIcon("Material");
-		else if (info.type == typeof(Shader))
-			icon = IconsLibrary.Instance.Types.GetIcon("Shader");
+		if (TypesIcons.ContainsKey(info.type))
+			icon = IconsLibrary.Instance.Types.GetIcon(TypesIcons[info.type]);
 		else
-			Debug.Log(info.type.Name);
+			NameVE.text = $"[{info.type.Name}] NameVE.text";
+
+		VisualElement CashedIconVE = element.Q<VisualElement>("CashedIcon");
+		Texture2D cashedIcon = new Texture2D(22,22);
+		Texture cahsed = AssetDatabase.GetCachedIcon(info.sourceAssetPath);
+		if(cahsed != null)
+			Graphics.ConvertTexture(cahsed, cashedIcon);
+		CashedIconVE.style.backgroundImage = cashedIcon;
 		IconVE.style.backgroundImage = icon;
 	}
 
-	private VisualElement packedAssetListViewItemCreator()
+
+	static Dictionary<Type,string> TypesIcons = new Dictionary<Type, string>
 	{
-		VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(packedAssetInfoItemVEpath);
-		if(visualTree == null)
-		{
-			Debug.Log("packedAssetInfoItemVEpath is null");
-		}
-		VisualElement temp = visualTree.CloneTree();
-		return temp;
+		{typeof(Texture2D), "Texture"},
+		{typeof(Sprite), "Texture"},
+		{typeof(MonoScript), "Script"},
+		{typeof(Material), "Material"},
+		{typeof(Shader), "Shader"},
+		{typeof(AudioClip), "Audio"},
+		{typeof(Font), "Font"},
+		{typeof(TextAsset), "Text"},
+	};
+	static Dictionary<int, SortByType> sortByDict  = new Dictionary<int, SortByType>
+	{
+		{0, SortByType.Size},
+		{1, SortByType.Type},
+		{2, SortByType.Name},
+	};
+
+
+	public void UpdateToShowItem()
+	{
+		UpdateSelectedFilters();
+		PackedAssetInfo[] res = assetsInfoLogic.GetToShowItem(selectedFilters, sortBy, othersCheck_Toggle.value, MinSizeInMB);
+
+		SetPackedAssetsInfo(res);
 	}
-
-
 }

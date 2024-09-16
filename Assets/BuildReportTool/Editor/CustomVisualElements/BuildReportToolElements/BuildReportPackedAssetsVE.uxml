@@ -1,5 +1,18 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="Base" style="flex-grow: 1; flex-basis: auto;">
-        <ui:ListView name="packedAssets_ListView" style="flex-grow: 1;" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="Base" style="flex-grow: 1; flex-basis: auto; flex-direction: row;">
+        <ui:VisualElement name="SideOptionsVE" style="flex-grow: 0; flex-basis: 40%;">
+            <ui:RadioButtonGroup label="Sort By" value="-1" name="SortBy_RadioBtnGroup" style="flex-direction: column; margin-top: 10px; margin-bottom: 10px;" />
+            <ui:GroupBox name="TypesToShowChecks_GroupBox" text="Show" style="flex-grow: 0;" />
+            <ui:VisualElement name="SelectAllOrNonVE" style="flex-grow: 0; flex-direction: row;">
+                <ui:Button text="Select All" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelecAll_Btn" focusable="false" />
+                <ui:Button text="None" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectNone_Btn" focusable="false" />
+            </ui:VisualElement>
+            <ui:VisualElement name="MinAssetSizeVE" style="flex-grow: 1; margin-top: 10px; margin-bottom: 10px; -unity-text-align: middle-center; padding-right: 10px; padding-left: 10px;">
+                <ui:Label tabindex="-1" text="Minumum Asset Size" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                <ui:Slider high-value="10" name="MinAssetSize_Slider" direction="Horizontal" page-size="0" />
+                <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MinAssetSize_Label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:ListView name="packedAssets_ListView" header-title="Packed Assets" show-foldout-header="false" show-add-remove-footer="false" show-bound-collection-size="true" style="flex-grow: 1; flex-wrap: wrap;" />
     </ui:VisualElement>
 </ui:UXML>

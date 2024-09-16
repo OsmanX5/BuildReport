@@ -1,7 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="PackedAssetInfoItemVE" style="flex-direction: row;">
-        <ui:VisualElement name="Icon" style="-unity-background-scale-mode: scale-to-fit; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Icons/Core/Success.png?fileID=2800000&amp;guid=4a5f53b6136301f4cacb041b80f8256b&amp;type=3#Success&quot;); margin-top: 3px; margin-right: 3px; margin-bottom: 3px; margin-left: 3px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; flex-basis: 32px; width: 32px; max-width: 32px; min-width: 32px; min-height: 32px; max-height: 32px; height: 32px;" />
+    <ui:VisualElement name="PackedAssetInfoItemVE" tooltip="Double Click To show in project folder" style="flex-direction: row; height: 22px;">
+        <ui:VisualElement name="CashedIcon" style="width: 22px; height: 22px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Icons/Types/3DModel.png?fileID=2800000&amp;guid=5e39cf7e1c8de6840b05e1607be2dbe1&amp;type=3#3DModel&quot;);" />
         <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Name" style="flex-grow: 1; margin-right: 5px; margin-left: 10px; -unity-text-align: middle-left;" />
         <ui:Label tabindex="-1" text="25 MB" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Size" style="-unity-text-align: middle-left;" />
+        <ui:VisualElement name="Icon" style="width: 22px; height: 22px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Icons/Types/3DModel.png?fileID=2800000&amp;guid=5e39cf7e1c8de6840b05e1607be2dbe1&amp;type=3#3DModel&quot;); display: none;" />
     </ui:VisualElement>
 </ui:UXML>

@@ -20,4 +20,8 @@ public static class CustomExtensions
 			return (size / (1024.0 * 1024.0)).ToString("F2") + " MB";
 		return (size / (1024.0 * 1024.0 * 1024.0)).ToString("F2") + " GB";
 	}
+	public static float GetSizeInMB(this ulong size)
+	{
+		return (float)size / 1024 / 1024;
+	}
 }

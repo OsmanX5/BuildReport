@@ -93,6 +93,9 @@ public class BuildReportSummaryVE
 			case BuildTarget.iOS:
 				icon = IconsLibrary.Instance.Platforms.GetIcon("iOS");
 				break;
+			case BuildTarget.WebGL:
+				icon = IconsLibrary.Instance.Platforms.GetIcon("WebGL");
+				break;
 			default:
 				icon = IconsLibrary.Instance.Platforms.GetIcon("Unknown");
 				break;
