@@ -18,7 +18,7 @@ public class AssetsInfoLogic
 	List<Type> OtherTypes;
 	ulong minAssetSize = 0;
 	ulong MaxAssetSize = 0;
-	
+	ulong TotalBuildSize;
 	public float MinAssetSizeInMB
 	{
 		get => minAssetSize.GetSizeInMB();
@@ -41,12 +41,12 @@ public class AssetsInfoLogic
 		// Cash All Assets
 		allPackedAssetsInfoSorted = packedAssetsInfo.OrderByDescending(x => x.packedSize).ToArray();
 		allPackedAssetsInfoGrouped = allPackedAssetsInfoSorted.GroupBy(x => x.type).ToDictionary(x => x.Key, x => x.ToArray());
-
+		TotalBuildSize = (ulong)allPackedAssetsInfoSorted.Sum(x => (decimal)x.packedSize);
 
 		// Get Each Type Info
 		Dictionary<Type,TypeInfoData> TypesInfo = allPackedAssetsInfoGrouped.
-			Select(TypeAndAssets => new KeyValuePair<Type, TypeInfoData>(TypeAndAssets.Key, new TypeInfoData(TypeAndAssets.Value))).
-			OrderByDescending(TypeInfoData => TypeInfoData.Value.totalSize).
+			Select(TypeAndAssets => new KeyValuePair<Type, TypeInfoData>(TypeAndAssets.Key, new TypeInfoData(TypeAndAssets.Value, TotalBuildSize))).
+			OrderByDescending(TypeInfoData => TypeInfoData.Value.TypeTotalSize).
 			ToDictionary(x => x.Key, x => x.Value);
 
 		TopTypesInfoData = TypesInfo.Take(NUMBER_OF_TOP_TYPES).ToDictionary(dict => dict.Key, dict => dict.Value);
@@ -54,8 +54,8 @@ public class AssetsInfoLogic
 		var otherTypesInfos = TypesInfo.Skip(NUMBER_OF_TOP_TYPES).ToDictionary(dict => dict.Key, dict => dict.Value);
 		OtherTypes = otherTypesInfos.Keys.ToList();
 		
-		ulong otherTypesTotalSize = (ulong)otherTypesInfos.Values.Sum(x => (decimal)x.totalSize);
-		OtherTypesInfosData = new(otherTypesInfos.Count(), otherTypesTotalSize);
+		ulong otherTypesTotalSize = (ulong)otherTypesInfos.Values.Sum(x => (decimal)x.TypeTotalSize);
+		OtherTypesInfosData = new(otherTypesInfos.Count(), otherTypesTotalSize, TotalBuildSize);
 
 		minAssetSize = allPackedAssetsInfoSorted.Min(x => x.packedSize);
 		MaxAssetSize = allPackedAssetsInfoSorted.Max(x => x.packedSize);
@@ -99,26 +99,29 @@ public class AssetsInfoLogic
 public struct TypeInfoData
 {
 	public int numberOfAssets;
-	public ulong totalSize;
-
-	public TypeInfoData(int numberOfAssets, ulong totalSize)
+	public ulong TypeTotalSize;
+	ulong BuildSize;
+	public float Precentage => (float)TypeTotalSize / BuildSize;
+	public TypeInfoData(int numberOfAssets, ulong totalSize,ulong buildSize)
 	{
 		this.numberOfAssets = numberOfAssets;
-		this.totalSize = totalSize;
+		this.TypeTotalSize = totalSize;
+		this.BuildSize = buildSize;
 	}
-	public TypeInfoData(IEnumerable<PackedAssetInfo> assets)
+	public TypeInfoData(IEnumerable<PackedAssetInfo> assets,ulong buildSize)
 	{
 		numberOfAssets = assets.Count();
-		totalSize = 0;
+		TypeTotalSize = 0;
 		foreach (PackedAssetInfo asset in assets)
 		{
-			totalSize += asset.packedSize;
+			TypeTotalSize += asset.packedSize;
 		}
+		BuildSize = buildSize;
 	}
 
 	public override string ToString()
 	{
-		return $"Number Of Assets: {numberOfAssets}, Total Size: {totalSize}";
+		return $"Number Of Assets: {numberOfAssets}, Total Size: {TypeTotalSize}";
 	}
 }
 public enum SortByType

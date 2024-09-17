@@ -12,8 +12,10 @@ public class BuildReportPackedAssetsVE : VisualElement
 	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportPackedAssetsVE.uxml";
 	const string packedAssetInfoItemVEpath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/PackedAssetInfoItemVE.uxml";
 	AssetsInfoLogic assetsInfoLogic;
-	
+
+	VisualElement SideOptionsVE;
 	ListView packedAssets_ListView;
+	
 	RadioButtonGroup SortBy_RadioBtnGroup;
 	GroupBox TypesToShowChecks_GroupBox;
 	Button SelecAll_Btn;
@@ -49,18 +51,53 @@ public class BuildReportPackedAssetsVE : VisualElement
 	public void QueryVisualElements(VisualElement baseVE)
 	{
 		packedAssets_ListView = baseVE.Q<ListView>(nameof(packedAssets_ListView));
-		SortBy_RadioBtnGroup = baseVE.Q<RadioButtonGroup>(nameof(SortBy_RadioBtnGroup));
-		TypesToShowChecks_GroupBox = baseVE.Q<GroupBox>(nameof(TypesToShowChecks_GroupBox));
-		SelecAll_Btn = baseVE.Q<Button>(nameof(SelecAll_Btn));
-		SelectNone_Btn = baseVE.Q<Button>(nameof(SelectNone_Btn));
-		MinAssetSize_Slider = baseVE.Q<Slider>(nameof(MinAssetSize_Slider));
-		MinAssetSize_Label = baseVE.Q<Label>(nameof(MinAssetSize_Label));
+		
+		SideOptionsVE = baseVE.Q<VisualElement>(nameof(SideOptionsVE));
+		SortBy_RadioBtnGroup = SideOptionsVE.Q<RadioButtonGroup>(nameof(SortBy_RadioBtnGroup));
+		TypesToShowChecks_GroupBox = SideOptionsVE.Q<GroupBox>(nameof(TypesToShowChecks_GroupBox));
+		SelecAll_Btn = SideOptionsVE.Q<Button>(nameof(SelecAll_Btn));
+		SelectNone_Btn = SideOptionsVE.Q<Button>(nameof(SelectNone_Btn));
+		MinAssetSize_Slider = SideOptionsVE.Q<Slider>(nameof(MinAssetSize_Slider));
+		MinAssetSize_Label = SideOptionsVE.Q<Label>(nameof(MinAssetSize_Label));
+	
+	
 	}
 	private void CreateOptionesPanel()
 	{
 		CreateSortByItems();
 		CreateShowOnlyChecks();
+		CreatePieChart();
 	}
+
+	private void CreatePieChart()
+	{
+		var typesAndData = assetsInfoLogic.TopTypesInfoData;
+
+		var values = typesAndData.Select(x => (float)x.Value.Precentage).ToList();
+		values.Add(assetsInfoLogic.OtherTypesInfosData.TypeTotalSize);
+		var colors = new List<Color>();
+		foreach (var x in typesAndData)
+		{
+			float HueValue = UnityEngine.Mathf.Lerp(0, 120/255f, 1- x.Value.Precentage);
+			colors.Add(Color.HSVToRGB(HueValue, 1, 1));
+		}
+		colors.Add(Color.white);
+
+		for(int i= 0; i < values.Count; i++)
+		{
+			Debug.Log($"item {i} precentage = {values[i]} ,Color = {colors[i]}");
+		}
+		var pieChart = new PieChart(values.ToArray(), colors.ToArray());
+		SideOptionsVE.Add(pieChart);
+		foreach(var x in typesAndData)
+		{
+			VisualElement temp = new VisualElement();
+			temp.Add(new Label($"{x.Key} [{x.Value.Precentage}]"));
+			SideOptionsVE.Add(temp);
+		}
+		
+	}
+
 	private void CreateSortByItems()
 	{
 		SortBy_RadioBtnGroup.choices = sortByDict.Keys.Select(x => sortByDict[x].ToString()).ToList();
@@ -96,7 +133,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 			typeCheck_Toggle.style.flexGrow = 1;
 			TypeFilterCheckBoxVE.Add(typeCheck_Toggle);
 
-			Label typeSize = new($"{typeInfoData.totalSize.FormatSize()}");
+			Label typeSize = new($"{typeInfoData.TypeTotalSize.FormatSize()}");
 
 			TypeFilterCheckBoxVE.Add(typeSize);
 			TypesToShowChecks_GroupBox.Add(TypeFilterCheckBoxVE);

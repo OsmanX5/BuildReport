@@ -7,7 +7,7 @@
                 <ui:Button text="Select All" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelecAll_Btn" focusable="false" />
                 <ui:Button text="None" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectNone_Btn" focusable="false" />
             </ui:VisualElement>
-            <ui:VisualElement name="MinAssetSizeVE" style="flex-grow: 1; margin-top: 10px; margin-bottom: 10px; -unity-text-align: middle-center; padding-right: 10px; padding-left: 10px;">
+            <ui:VisualElement name="MinAssetSizeVE" style="flex-grow: 0; margin-top: 10px; margin-bottom: 10px; -unity-text-align: middle-center; padding-right: 10px; padding-left: 10px;">
                 <ui:Label tabindex="-1" text="Minumum Asset Size" parse-escape-sequences="true" display-tooltip-when-elided="true" />
                 <ui:Slider high-value="10" name="MinAssetSize_Slider" direction="Horizontal" page-size="0" />
                 <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MinAssetSize_Label" />
