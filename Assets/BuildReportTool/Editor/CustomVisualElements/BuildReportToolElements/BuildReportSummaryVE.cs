@@ -22,7 +22,8 @@ public class BuildReportSummaryVE
 	public BuildReportSummaryVE(BuildSummary summaryData)
 	{
 		this.summaryData = summaryData;
-	}
+
+    }
 
 	public VisualElement GetVE()
 	{

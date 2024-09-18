@@ -29,7 +29,8 @@ public class AssetsInfoLogic
 	}
 	public AssetsInfoLogic(IEnumerable<PackedAssets> packedAssets)
 	{
-		List<PackedAssetInfo> temp = new List<PackedAssetInfo>();
+
+        List<PackedAssetInfo> temp = new List<PackedAssetInfo>();
 		foreach (PackedAssets packedAsset in packedAssets)
 			temp.AddRange(packedAsset.contents);
 		Init(temp);
@@ -42,9 +43,8 @@ public class AssetsInfoLogic
 		allPackedAssetsInfoSorted = packedAssetsInfo.OrderByDescending(x => x.packedSize).ToArray();
 		allPackedAssetsInfoGrouped = allPackedAssetsInfoSorted.GroupBy(x => x.type).ToDictionary(x => x.Key, x => x.ToArray());
 		TotalBuildSize = (ulong)allPackedAssetsInfoSorted.Sum(x => (decimal)x.packedSize);
-
-		// Get Each Type Info
-		Dictionary<Type,TypeInfoData> TypesInfo = allPackedAssetsInfoGrouped.
+        // Get Each Type Info
+        Dictionary<Type,TypeInfoData> TypesInfo = allPackedAssetsInfoGrouped.
 			Select(TypeAndAssets => new KeyValuePair<Type, TypeInfoData>(TypeAndAssets.Key, new TypeInfoData(TypeAndAssets.Value, TotalBuildSize))).
 			OrderByDescending(TypeInfoData => TypeInfoData.Value.TypeTotalSize).
 			ToDictionary(x => x.Key, x => x.Value);

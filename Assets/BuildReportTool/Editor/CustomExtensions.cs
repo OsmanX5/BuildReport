@@ -8,7 +8,7 @@ public static class CustomExtensions
 {
 	public static string FormatTime(this System.TimeSpan t)
 	{
-		return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2") + "." + t.Milliseconds.ToString("D3");
+		return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2") ;
 	}
 	public static string FormatSize(this ulong size)
 	{

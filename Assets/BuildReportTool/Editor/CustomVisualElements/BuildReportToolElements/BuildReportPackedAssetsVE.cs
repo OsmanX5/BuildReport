@@ -74,28 +74,21 @@ public class BuildReportPackedAssetsVE : VisualElement
 		var typesAndData = assetsInfoLogic.TopTypesInfoData;
 
 		var values = typesAndData.Select(x => (float)x.Value.Precentage).ToList();
-		values.Add(assetsInfoLogic.OtherTypesInfosData.TypeTotalSize);
-		var colors = new List<Color>();
-		foreach (var x in typesAndData)
+		values.Add(assetsInfoLogic.OtherTypesInfosData.Precentage);
+		int numOfColors = values.Count;
+		Color[] colors = ColorsPalet1.Take(numOfColors).ToArray();
+		if(numOfColors > ColorsPalet1.Count)
 		{
-			float HueValue = UnityEngine.Mathf.Lerp(0, 120/255f, 1- x.Value.Precentage);
-			colors.Add(Color.HSVToRGB(HueValue, 1, 1));
-		}
-		colors.Add(Color.white);
+            Debug.LogWarning("Not enough colors in the palet");
+        }
+		colors = colors.Select(colors => new Color(colors.r, colors.g, colors.b, 0.8f)).ToArray();
+		var Types = typesAndData.Select(x => x.Key).ToList();
+		Types.Add(null);
 
-		for(int i= 0; i < values.Count; i++)
-		{
-			Debug.Log($"item {i} precentage = {values[i]} ,Color = {colors[i]}");
-		}
-		var pieChart = new PieChart(values.ToArray(), colors.ToArray());
-		SideOptionsVE.Add(pieChart);
-		foreach(var x in typesAndData)
-		{
-			VisualElement temp = new VisualElement();
-			temp.Add(new Label($"{x.Key} [{x.Value.Precentage}]"));
-			SideOptionsVE.Add(temp);
-		}
-		
+		var pieChart = new PieChartWithData(Types,values.ToArray(), colors);
+		VisualElement pieChartVE = new VisualElement();
+		pieChartVE.Add(pieChart);
+		SideOptionsVE.Add(pieChartVE);		
 	}
 
 	private void CreateSortByItems()
@@ -235,17 +228,12 @@ public class BuildReportPackedAssetsVE : VisualElement
 	private void packedAssetListViewItemBinder(VisualElement element, int index)
 	{
 		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
-		Label SizeVE = element.Q<Label>("Size");
-		SizeVE.text = info.packedSize.FormatSize();
 
-		Label NameVE = element.Q<Label>("Name");
-		NameVE.text = Path.GetFileName(info.sourceAssetPath);
-		VisualElement IconVE = element.Q<VisualElement>("Icon");
-		Texture2D icon = IconsLibrary.Instance.Core.GetIcon("Unknown");
-		if (TypesIcons.ContainsKey(info.type))
-			icon = IconsLibrary.Instance.Types.GetIcon(TypesIcons[info.type]);
-		else
-			NameVE.text = $"[{info.type.Name}] NameVE.text";
+
+        Label NameVE = element.Q<Label>("Name");
+		string name = Path.GetFileNameWithoutExtension(info.sourceAssetPath);
+		NameVE.text = name;
+
 
 		VisualElement CashedIconVE = element.Q<VisualElement>("CashedIcon");
 		Texture2D cashedIcon = new Texture2D(22,22);
@@ -253,9 +241,43 @@ public class BuildReportPackedAssetsVE : VisualElement
 		if(cahsed != null)
 			Graphics.ConvertTexture(cahsed, cashedIcon);
 		CashedIconVE.style.backgroundImage = cashedIcon;
-		IconVE.style.backgroundImage = icon;
-	}
 
+		Label TagLabel = element.Q<Label>("Tag");
+        AssetInfoTag tag;
+		if(info.sourceAssetPath.StartsWith("Assets"))
+            tag = new AssetInfoTag { Tag = "Assets", Color = new Color(235 / 255f, 84 / 255f, 97 / 255f) }; 
+        else if(info.sourceAssetPath.StartsWith("Packages"))
+            tag = new AssetInfoTag { Tag = "Packages", Color = new Color(101/255f, 213 / 255f, 243 / 255f) };
+        else
+            tag = new AssetInfoTag { Tag = "Other", Color = Color.gray };;
+        TagLabel.text = tag.Tag;
+		TagLabel.style.backgroundColor = tag.Color;
+
+        Label SizeVE = element.Q<Label>("Size");
+        SizeVE.text = info.packedSize.FormatSize();
+
+
+    }
+	struct AssetInfoTag
+	{
+		public string Tag;
+		public Color Color;
+	}
+	List<Color> ColorsPalet1 = new List<Color>
+	{
+		Color.red,
+		Color.green,
+		Color.cyan,
+		Color.yellow,
+		Color.magenta,
+		Color.blue,
+		Color.grey,
+		Color.white,
+		new Color(0.5f, 0.5f, 0.5f),
+		new Color(0.5f, 0.5f, 0.5f),
+		new Color(0.5f, 0.5f, 0.5f),
+		new Color(0.5f, 0.5f, 0.5f),
+	};
 
 	static Dictionary<Type,string> TypesIcons = new Dictionary<Type, string>
 	{
