@@ -56,7 +56,7 @@ public class BuildReportDeepContentVE
 		{
 			case ContentType.BuildSteps:
 				//BuildSteps_Content = new BuildReportBuildStepsVE(report.steps).GetVE();
-				VisualElement buildStepsVE = new Label("Build Steps");
+				VisualElement buildStepsVE = new BuildReportStepsVE(report.steps).GetVE();
 				Content.Add(buildStepsVE);
 				break;
 			case ContentType.PackedAssets:

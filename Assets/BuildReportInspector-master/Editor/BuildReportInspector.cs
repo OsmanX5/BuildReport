@@ -250,115 +250,7 @@ namespace Unity.BuildReportInspector
             return LogType.Log;
         }
 
-        private class BuildStepNode
-        {
-            private BuildStep? step;
-            public int depth;
-            public List<BuildStepNode> children;
-            private LogType worstChildrenLogType;
-            public bool foldoutState;
-
-            public BuildStepNode(BuildStep? _step, int _depth)
-            {
-                step = _step;
-                depth = _depth;
-                children = new List<BuildStepNode>();
-
-                worstChildrenLogType = LogType.Log;
-                if(step.HasValue)
-                {
-                    foreach (var message in step.Value.messages)
-                    {
-                        worstChildrenLogType = message.type; // Warning
-                        if (ErrorLogTypes.Contains(message.type))
-                            break; // Error
-                    }
-                }
-
-                foldoutState = false;
-            }
-
-            internal void UpdateWorstChildrenLogType()
-            {
-                foreach(var child in children)
-                {
-                    child.UpdateWorstChildrenLogType();
-                    worstChildrenLogType = WorseLogType(worstChildrenLogType, child.worstChildrenLogType);
-                }
-            }
-
-            public void LayoutGUI(ref bool switchBackgroundColor, float indentPixels)
-            {
-                switchBackgroundColor = !switchBackgroundColor;
-                GUILayout.BeginVertical(switchBackgroundColor ? OddStyle : EvenStyle);
-                GUILayout.BeginHorizontal();                
-                GUILayout.Space(10 + indentPixels);
-
-                if (children.Any() || (step.HasValue && step.Value.messages.Any()))
-                {
-                    if (worstChildrenLogType != LogType.Log)
-                    {
-                        var icon = "console.warnicon.sml";
-                        if (worstChildrenLogType != LogType.Warning)
-                            icon = "console.erroricon.sml";
-                        foldoutState = EditorGUILayout.Foldout(foldoutState, EditorGUIUtility.TrTextContentWithIcon(step.GetValueOrDefault().name, icon), true);
-                    }
-                    else
-                    {
-                        foldoutState = EditorGUILayout.Foldout(foldoutState, new GUIContent(step.GetValueOrDefault().name), true);
-                    }
-                }
-                else
-                    GUILayout.Label(step.GetValueOrDefault().name);
-
-                GUILayout.FlexibleSpace();
-                GUILayout.Label(step.GetValueOrDefault().duration.Hours + ":" + 
-                                step.GetValueOrDefault().duration.Minutes.ToString("D2") + ":" + 
-                                step.GetValueOrDefault().duration.Seconds.ToString("D2") + "." + 
-                                step.GetValueOrDefault().duration.Milliseconds.ToString("D3"));
-                GUILayout.EndHorizontal();
-
-                if (foldoutState)
-                {
-                    if (step.HasValue)
-                    {
-                        foreach (var message in step.Value.messages)
-                        {
-                            var icon = "console.infoicon.sml";
-                            var oldCol = GUI.color;
-                            switch (message.type)
-                            {
-                                case LogType.Warning:
-                                    GUI.color = Color.yellow;
-                                    icon = "console.warnicon.sml";
-                                    break;
-                                case LogType.Error:
-                                case LogType.Exception:
-                                case LogType.Assert:
-                                    GUI.color = Color.red;
-                                    icon = "console.erroricon.sml";
-                                    break;
-                            }
-                            GUILayout.BeginHorizontal();
-                            {
-                                GUILayout.Space(20 + indentPixels);
-                                GUILayout.Label(EditorGUIUtility.IconContent(icon), GUILayout.ExpandWidth(false));
-                                var style = EditorStyles.label;
-                                style.wordWrap = true;
-                                EditorGUILayout.LabelField(new GUIContent(message.content, message.content), style);
-                            }
-                            GUILayout.EndHorizontal();
-                            GUI.color = oldCol;
-                        }
-                    }
-
-                    foreach (var child in children)
-                        child.LayoutGUI(ref switchBackgroundColor, indentPixels + 20);
-                }
-                GUILayout.EndVertical();
-            }
-        }
-
+ 
 #if UNITY_2019_3_OR_NEWER
         private void OnMobileAppendixGUI()
         {
@@ -399,7 +291,116 @@ namespace Unity.BuildReportInspector
         }
 #endif // UNITY_2019_3_OR_NEWER
 
-        BuildStepNode rootStepNode = new BuildStepNode(null, -1);
+		private class BuildStepNode
+		{
+			private BuildStep? step;
+			public int depth;
+			public List<BuildStepNode> children;
+			private LogType worstChildrenLogType;
+			public bool foldoutState;
+
+			public BuildStepNode(BuildStep? _step, int _depth)
+			{
+				step = _step;
+				depth = _depth;
+				children = new List<BuildStepNode>();
+
+				worstChildrenLogType = LogType.Log;
+				if (step.HasValue)
+				{
+					foreach (var message in step.Value.messages)
+					{
+						worstChildrenLogType = message.type; // Warning
+						if (ErrorLogTypes.Contains(message.type))
+							break; // Error
+					}
+				}
+
+				foldoutState = false;
+			}
+
+			internal void UpdateWorstChildrenLogType()
+			{
+				foreach (var child in children)
+				{
+					child.UpdateWorstChildrenLogType();
+					worstChildrenLogType = WorseLogType(worstChildrenLogType, child.worstChildrenLogType);
+				}
+			}
+
+			public void LayoutGUI(ref bool switchBackgroundColor, float indentPixels)
+			{
+				switchBackgroundColor = !switchBackgroundColor;
+				GUILayout.BeginVertical(switchBackgroundColor ? OddStyle : EvenStyle);
+				GUILayout.BeginHorizontal();
+				GUILayout.Space(10 + indentPixels);
+
+				if (children.Any() || (step.HasValue && step.Value.messages.Any()))
+				{
+					if (worstChildrenLogType != LogType.Log)
+					{
+						var icon = "console.warnicon.sml";
+						if (worstChildrenLogType != LogType.Warning)
+							icon = "console.erroricon.sml";
+						foldoutState = EditorGUILayout.Foldout(foldoutState, EditorGUIUtility.TrTextContentWithIcon(step.GetValueOrDefault().name, icon), true);
+					}
+					else
+					{
+						foldoutState = EditorGUILayout.Foldout(foldoutState, new GUIContent(step.GetValueOrDefault().name), true);
+					}
+				}
+				else
+					GUILayout.Label(step.GetValueOrDefault().name);
+
+				GUILayout.FlexibleSpace();
+				GUILayout.Label(step.GetValueOrDefault().duration.Hours + ":" +
+								step.GetValueOrDefault().duration.Minutes.ToString("D2") + ":" +
+								step.GetValueOrDefault().duration.Seconds.ToString("D2") + "." +
+								step.GetValueOrDefault().duration.Milliseconds.ToString("D3"));
+				GUILayout.EndHorizontal();
+
+				if (foldoutState)
+				{
+					if (step.HasValue)
+					{
+						foreach (var message in step.Value.messages)
+						{
+							var icon = "console.infoicon.sml";
+							var oldCol = GUI.color;
+							switch (message.type)
+							{
+								case LogType.Warning:
+									GUI.color = Color.yellow;
+									icon = "console.warnicon.sml";
+									break;
+								case LogType.Error:
+								case LogType.Exception:
+								case LogType.Assert:
+									GUI.color = Color.red;
+									icon = "console.erroricon.sml";
+									break;
+							}
+							GUILayout.BeginHorizontal();
+							{
+								GUILayout.Space(20 + indentPixels);
+								GUILayout.Label(EditorGUIUtility.IconContent(icon), GUILayout.ExpandWidth(false));
+								var style = EditorStyles.label;
+								style.wordWrap = true;
+								EditorGUILayout.LabelField(new GUIContent(message.content, message.content), style);
+							}
+							GUILayout.EndHorizontal();
+							GUI.color = oldCol;
+						}
+					}
+
+					foreach (var child in children)
+						child.LayoutGUI(ref switchBackgroundColor, indentPixels + 20);
+				}
+				GUILayout.EndVertical();
+			}
+		}
+
+		BuildStepNode rootStepNode = new BuildStepNode(null, -1);
         private void OnBuildStepGUI()
         {
             if(!rootStepNode.children.Any())
