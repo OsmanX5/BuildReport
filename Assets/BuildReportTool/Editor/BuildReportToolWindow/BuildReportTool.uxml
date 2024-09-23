@@ -8,12 +8,13 @@
             <ui:VisualElement style="flex-grow: 0; flex-direction: row;">
                 <uie:ObjectField label="Active build Report" type="UnityEditor.Build.Reporting.BuildReport, UnityEditor.CoreModule" name="BuildReport_ObjectField" allow-scene-objects="false" style="flex-shrink: 1; flex-grow: 1;" />
                 <ui:Button text="Deep Build" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NewBuild_Btn" enable-rich-text="false" />
-                <ui:Button text="Import Last Build report" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveReport_Btn" tooltip="import the last build report to assets file" />
+                <ui:Button text="Save Report" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveReport_Btn" tooltip="import the last build report to assets file" />
             </ui:VisualElement>
             <ui:VisualElement name="BuildReportContent_VE" style="flex-basis: auto; flex-grow: 1;" />
         </ui:VisualElement>
-        <ui:VisualElement name="Footer" style="flex-grow: 0; justify-content: flex-end; flex-shrink: 0;">
+        <ui:VisualElement name="Footer" style="flex-grow: 0; justify-content: flex-end; flex-shrink: 0; flex-direction: row; align-self: center;">
             <ui:Label tabindex="-1" text="Develpoed By Osman Elfaki" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EndLine" style="align-self: center;" />
+            <ui:Button text="Contact Me" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ContactMe_Btn" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 public class BuildReportSummaryVE 
 {
-	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportSummaryVE.uxml";
+	const string templatePath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolElements/BuildReportSummaryVE.uxml";
 
 	VisualElement Platform_LabelIcon; // update in future to use Label icon type
 	VisualElement SummaryResult_LabelIcon; 
@@ -17,7 +17,6 @@ public class BuildReportSummaryVE
 	VisualElement TotalTime_IconInfo;
 	VisualElement TotalWarnings_IconInfo;
 	VisualElement TotalErrors_IconInfo;
-
 	BuildSummary summaryData;
 	public BuildReportSummaryVE(BuildSummary summaryData)
 	{

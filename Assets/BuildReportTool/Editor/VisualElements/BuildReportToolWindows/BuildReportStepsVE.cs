@@ -16,8 +16,7 @@ using System.Drawing;
 /// </summary>
 public class BuildReportStepsVE : VisualElement
 {
-	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportStepsVE.uxml";
-	//const string packedAssetInfoItemVEpath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/PackedAssetInfoItemVE.uxml";
+	const string templatePath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolWindows/BuildReportStepsVE.uxml";
 	BuildStepsInfoLogic buildStepsInfoLogic;
 
 	/// <summary>

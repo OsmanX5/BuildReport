@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Build.Content;
 using UnityEditor.Build.Reporting;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class BuildReportTool : EditorWindow
 	ObjectField buildReport_ObjectField;
 	Button NewBuild_Btn;
 	Button SaveReport_Btn;
+	Button ContactMe_Btn;
 	VisualElement Body_VE;
 	VisualElement BuildReportContent_VE;
 	VisualElement root;
@@ -25,7 +27,7 @@ public class BuildReportTool : EditorWindow
 	/// </summary>
 	BuildReport buildReport => buildReport_ObjectField.value as BuildReport;
 
-	[MenuItem("CustomeTools/BuildReportTool")]
+	[MenuItem("BuildTools/BuildReportTool")]
 	public static void ShowBuildReportToolWindow()
 	{
 		BuildReportTool wnd = GetWindow<BuildReportTool>();
@@ -54,58 +56,88 @@ public class BuildReportTool : EditorWindow
 		BuildReportContent_VE = Body_VE.Q<VisualElement>("BuildReportContent_VE");
 		NewBuild_Btn = Body_VE.Q<Button>(nameof(NewBuild_Btn));
 		SaveReport_Btn = Body_VE.Q<Button>(nameof(SaveReport_Btn));
+		ContactMe_Btn =root.Q<Button>("ContactMe_Btn");
 	}
 	void RegisterEvents()
 	{
 		buildReport_ObjectField.RegisterCallback<ChangeEvent<Object>>(OnBuildReportChanged);
 		NewBuild_Btn.clicked += OnNewBuildClicked;
 		SaveReport_Btn.clicked += OnSaveReportClicked;
+		ContactMe_Btn.clicked += OnContactMeClicked;
+	}
+
+	private void OnContactMeClicked()
+	{
+		string URL = "https://www.linkedin.com/in/osman-elfaki/";
+		Application.OpenURL(URL);
 	}
 
 	private void OnSaveReportClicked()
 	{
-		string path = EditorUtility.SaveFilePanel("Save Build Report", "Assets", "BuildReport", "buildreport");
-		ImportLastBuildReport(path);
+		if(ValidateOpenLastBuild() == false)
+		{
+			EditorUtility.DisplayDialog("Error", "There is no build report to save try to make a build first", "Ok");
+			return;
+		}
+		string fileSavePath = EditorUtility.SaveFilePanelInProject("Save Build Report", "Assets", "BuildReport", "buildreport");
+		Debug.Log("fileSavePath: " + fileSavePath);
+		var temp = ImportLastBuildReport(fileSavePath);
+		buildReport_ObjectField.value = temp;
 	}
 
 	private void OnNewBuildClicked()
 	{
-		BuildPlayerOptions options = new BuildPlayerOptions();
-		options.options = BuildOptions.Development;
-		options.options |= BuildOptions.DetailedBuildReport;
-		Debug.Log("start building");
-		Debug.Log(options.options);
-		BuildPlayerOptions final = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(options);
+		BuildPlayerOptions final = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(new BuildPlayerOptions());
+		final.options |= BuildOptions.DetailedBuildReport;
+		string Scenes = "";
+		int c = 0;
 		foreach (var scene in final.scenes)
 		{
-			Debug.Log(scene);
+			Scenes += $"[{c++}]{scene} \n";
 		}
-		buildReport_ObjectField.value = BuildPipeline.BuildPlayer(final);
+		if(EditorUtility.DisplayDialog("Build Report Tool", "Building These scesne \n" + Scenes, "Ok"))
+		{
+			BuildOptions options = final.options;
+			options |= BuildOptions.CleanBuildCache;
+			var lastBuild = BuildPipeline.BuildPlayer(final.scenes,final.locationPathName,final.target,options);
+			lastBuild.name = "LastBuild";
+			buildReport_ObjectField.value = lastBuild;
 
-		Debug.Log("end building");
+			Debug.Log("end building");
+		}
+
 	}
 	public static bool ValidateOpenLastBuild()
 	{
 		return File.Exists("Library/LastBuild.buildreport");
 	}
 
-	public static string ImportLastBuildReport(string assetPath)
+	public static BuildReport ImportLastBuildReport(string assetPath)
 	{
 		File.Copy("Library/LastBuild.buildreport", assetPath, true);
 		AssetDatabase.ImportAsset(assetPath);
+		BuildReport saved = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
+		saved.name = Path.GetFileNameWithoutExtension(assetPath);
+		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
-		return assetPath;
+		return saved;
 	}
 	private void OnBuildReportChanged(ChangeEvent<Object> evt)
 	{
 		Debug.Log("Build Report Changed");
+
 		ReBuildTheBody();
 	}
 
 	void ReBuildTheBody()
 	{
-		BuildReportContent_VE.Clear();
 
+		BuildReportContent_VE.Clear();
+		if(buildReport == null)
+		{
+			this.Repaint();
+			return;
+		}
 		VisualElement ReportSummary = new BuildReportSummaryVE(buildReport.summary).GetVE();
 		ReportSummary.name = "ReportSummary_this";
 		BuildReportContent_VE.Add(ReportSummary);

@@ -9,8 +9,8 @@ using UnityEngine.UIElements;
 
 public class BuildReportPackedAssetsVE : VisualElement
 {
-	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportPackedAssetsVE.uxml";
-	const string packedAssetInfoItemVEpath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/PackedAssetInfoItemVE.uxml";
+	//const string templatePath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolWindows/BuildReportPackedAssetsVE.uxml";
+	const string packedAssetInfoItemVEpath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolElements/PackedAssetInfoItemVE.uxml";
 	AssetsInfoLogic assetsInfoLogic;
 
 	VisualElement SideOptionsVE;
@@ -36,7 +36,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 
 	public VisualElement GetVE()
 	{
-		VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
+		VisualTreeAsset visualTree = VisualElementUtilities.LoadUXML("BuildReportPackedAssetsVE");
 		VisualElement result = new VisualElement();
 		visualTree.CloneTree(result);
 		QueryVisualElements(result);
@@ -220,22 +220,49 @@ public class BuildReportPackedAssetsVE : VisualElement
 
 	private void UpdateTheAssetCardWithThisInde(int index)
 	{
+		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
+
 		Label AssetName_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetName_Label));
 		Label AssetPath_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetPath_Label));
 		Label AssetSize_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetSize_Label));
+		Label AssetType_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetType_Label));
+		VisualElement CustomInfoVE = SelectedAssetCardVE.Q<VisualElement>(nameof(CustomInfoVE));
 		ListView AssetUsingScenes_ListView = SelectedAssetCardVE.Q<ListView>(nameof(AssetUsingScenes_ListView));
 		VisualElement AssetIcon_VE = SelectedAssetCardVE.Q<VisualElement>(nameof(AssetIcon_VE));
 
-		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
 
 		AssetName_Label.text = Path.GetFileNameWithoutExtension(info.sourceAssetPath);
-		AssetPath_Label.text = info.sourceAssetPath;
+		AssetPath_Label.text = info.sourceAssetPath ;
+		AssetType_Label.text = info.type.ToString();
 		AssetSize_Label.text = info.packedSize.FormatSize();
-		Texture2D cashedIcon = new Texture2D(22, 22);
-		Texture cahsed = AssetDatabase.GetCachedIcon(info.sourceAssetPath);
-		if (cahsed != null)
-			Graphics.ConvertTexture(cahsed, cashedIcon);
+		Texture2D cashedIcon = AssetPreview.GetAssetPreview(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(info.sourceAssetPath));
 		AssetIcon_VE.style.backgroundImage = cashedIcon;
+		
+		CustomInfoVE.style.display = DisplayStyle.None;
+		CustomInfoVE.Clear();
+		if (info.type == typeof(Mesh))
+		{
+			
+			CustomInfoVE.style.display = DisplayStyle.Flex;
+			Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(info.sourceAssetPath);
+			int vertexCount = mesh.vertexCount;
+			CustomInfoVE.Add(new Label($"Vertex Count: {vertexCount}"));
+			
+		}
+		else if(info.type.IsSubclassOf(typeof(Texture) ))
+		{
+			CustomInfoVE.style.display = DisplayStyle.Flex;
+			Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(info.sourceAssetPath);
+			if(texture == null)
+			{
+				return;
+			}
+			int textureSize = texture.width;
+			int textureHeight = texture.height;
+			Debug.Log(textureSize);
+			CustomInfoVE.Add(new Label($"Texture Size : {textureSize} X {textureHeight}"));
+		}
+
 		string[] scenes = assetsInfoLogic.GetScenesForAsset(info.sourceAssetPath);
 		if(scenes.Length == 0)
 		{

@@ -10,7 +10,7 @@ using UnityEditor.UIElements;
 
 public class BuildReportDeepContentVE
 {
-	const string templatePath = "Assets/BuildReportTool/Editor/CustomVisualElements/BuildReportToolElements/BuildReportDeepContentVE.uxml";
+	const string templatePath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolWindows/BuildReportDeepContentVE.uxml";
 	BuildReport report;
 	ContentType selectedContetType;
 

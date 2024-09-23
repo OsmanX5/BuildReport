@@ -12,7 +12,7 @@ public class IconsLibrary : ScriptableObject
 	public IconLibrary Core;
 	public IconLibrary Types;
 	public IconLibrary Platforms;
-	const string InstanceAssetsPath = "Assets/BuildReportTool/Editor/Icons/IconsLibrary.asset";
+	const string InstanceAssetsPath = "Assets/BuildReportTool/Editor/Assets/Icons/IconsLibrary.asset";
 	static IconsLibrary instance;
 	public static IconsLibrary Instance
 	{
@@ -34,7 +34,7 @@ public class IconsLibrary : ScriptableObject
 public class IconLibrary
 {
 	[SerializeField] List<Texture2D> Icons;
-	string NotFoundIconPath = "Assets/BuildReportTool/Editor/Icons/Core/not-found.png";
+	string NotFoundIconPath = "Assets/BuildReportTool/Editor/Assets/Icons/Core/not-found.png";
 	public Texture2D GetIcon(string name,int w= 64,int h = 64)
 	{
 		foreach (var item in Icons)
@@ -53,7 +53,7 @@ public class IconLibrary
 	public void LoadIcons(string folderName)
 	{
 		Icons = new List<Texture2D>();
-		string[] guids = AssetDatabase.FindAssets("t:Texture2D", new string[] { $"Assets/BuildReportTool/Editor/Icons/{folderName}" });
+		string[] guids = AssetDatabase.FindAssets("t:Texture2D", new string[] { $"Assets/BuildReportTool/Editor/Assets/Icons/{folderName}" });
 		foreach (var guid in guids)
 		{
 			string path = AssetDatabase.GUIDToAssetPath(guid);
