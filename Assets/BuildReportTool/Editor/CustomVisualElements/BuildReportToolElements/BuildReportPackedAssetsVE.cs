@@ -14,8 +14,8 @@ public class BuildReportPackedAssetsVE : VisualElement
 	AssetsInfoLogic assetsInfoLogic;
 
 	VisualElement SideOptionsVE;
+	VisualElement SelectedAssetCardVE;
 	ListView packedAssets_ListView;
-	
 	RadioButtonGroup SortBy_RadioBtnGroup;
 	GroupBox TypesToShowChecks_GroupBox;
 	Button SelecAll_Btn;
@@ -29,9 +29,9 @@ public class BuildReportPackedAssetsVE : VisualElement
 	HashSet<Type> selectedFilters;
 	SortByType sortBy = SortByType.Size;
 	float MinSizeInMB => MinAssetSize_Slider.value;
-	public BuildReportPackedAssetsVE(PackedAssets[] packedAssets)
+	public BuildReportPackedAssetsVE(BuildReport buildReport)
 	{
-		assetsInfoLogic =new (packedAssets);
+		assetsInfoLogic =new (buildReport);
 	}
 
 	public VisualElement GetVE()
@@ -59,8 +59,9 @@ public class BuildReportPackedAssetsVE : VisualElement
 		SelectNone_Btn = SideOptionsVE.Q<Button>(nameof(SelectNone_Btn));
 		MinAssetSize_Slider = SideOptionsVE.Q<Slider>(nameof(MinAssetSize_Slider));
 		MinAssetSize_Label = SideOptionsVE.Q<Label>(nameof(MinAssetSize_Label));
-	
-	
+
+		SelectedAssetCardVE = baseVE.Q<VisualElement>(nameof(SelectedAssetCardVE));
+		SelectedAssetCardVE.style.display = DisplayStyle.None;
 	}
 	private void CreateOptionesPanel()
 	{
@@ -204,9 +205,61 @@ public class BuildReportPackedAssetsVE : VisualElement
 		
 		packedAssets_ListView.makeItem = packedAssetListViewItemCreator;
 		packedAssets_ListView.bindItem = packedAssetListViewItemBinder;
-
+		packedAssets_ListView.selectedIndicesChanged += OnItemClicked;
 		packedAssets_ListView.itemsChosen += OnAssetFromListViewChosen;
 	}
+
+	private void OnItemClicked(IEnumerable<int> enumerable)
+	{
+		SelectedAssetCardVE.style.display = DisplayStyle.Flex;
+		foreach (int index in enumerable)
+		{
+			UpdateTheAssetCardWithThisInde(index);
+		}
+	}
+
+	private void UpdateTheAssetCardWithThisInde(int index)
+	{
+		Label AssetName_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetName_Label));
+		Label AssetPath_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetPath_Label));
+		Label AssetSize_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetSize_Label));
+		ListView AssetUsingScenes_ListView = SelectedAssetCardVE.Q<ListView>(nameof(AssetUsingScenes_ListView));
+		VisualElement AssetIcon_VE = SelectedAssetCardVE.Q<VisualElement>(nameof(AssetIcon_VE));
+
+		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
+
+		AssetName_Label.text = Path.GetFileNameWithoutExtension(info.sourceAssetPath);
+		AssetPath_Label.text = info.sourceAssetPath;
+		AssetSize_Label.text = info.packedSize.FormatSize();
+		Texture2D cashedIcon = new Texture2D(22, 22);
+		Texture cahsed = AssetDatabase.GetCachedIcon(info.sourceAssetPath);
+		if (cahsed != null)
+			Graphics.ConvertTexture(cahsed, cashedIcon);
+		AssetIcon_VE.style.backgroundImage = cashedIcon;
+		string[] scenes = assetsInfoLogic.GetScenesForAsset(info.sourceAssetPath);
+		if(scenes.Length == 0)
+		{
+			AssetUsingScenes_ListView.style.display = DisplayStyle.None;
+		}
+		else
+		{
+			AssetUsingScenes_ListView.style.display = DisplayStyle.Flex;
+
+			AssetUsingScenes_ListView.itemsSource = scenes;
+			AssetUsingScenes_ListView.makeItem = () => new SceneUsageListItemVE();
+			AssetUsingScenes_ListView.bindItem = (element, i) => (element as SceneUsageListItemVE).SetData(scenes[i]);
+			AssetUsingScenes_ListView.itemsChosen += (enumerable) =>
+			{
+				foreach (string selected in enumerable)
+				{
+					string path = selected.Split('(')[1].Replace(")", "");
+					EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path));
+				}
+			};
+			AssetUsingScenes_ListView.Rebuild();
+		}
+	}
+
 
 	private void OnAssetFromListViewChosen(IEnumerable<object> enumerable)
 	{
@@ -256,8 +309,16 @@ public class BuildReportPackedAssetsVE : VisualElement
         Label SizeVE = element.Q<Label>("Size");
         SizeVE.text = info.packedSize.FormatSize();
 
+		VisualElement SceneUsageTagVE = element.Q<VisualElement>(nameof(SceneUsageTagVE));
+		int sceneUsage = assetsInfoLogic.GetScenesForAsset(info.sourceAssetPath).Length;
+		if(sceneUsage == 0)
+			SceneUsageTagVE.style.display = DisplayStyle.None;
+		else
+			SceneUsageTagVE.style.display = DisplayStyle.Flex;
+		Label ScenesCount_Label = SceneUsageTagVE.Q<Label>(nameof(ScenesCount_Label));
+		ScenesCount_Label.text = sceneUsage.ToString();
 
-    }
+	}
 	struct AssetInfoTag
 	{
 		public string Tag;
@@ -265,8 +326,8 @@ public class BuildReportPackedAssetsVE : VisualElement
 	}
 	List<Color> ColorsPalet1 = new List<Color>
 	{
-		Color.red,
-		Color.green,
+		new Color(235/255f,84/255f,97/255f,0/.7f),
+		new Color(76/255f,175/255f,80/255f,0.7f),
 		Color.cyan,
 		Color.yellow,
 		Color.magenta,
@@ -304,5 +365,53 @@ public class BuildReportPackedAssetsVE : VisualElement
 		PackedAssetInfo[] res = assetsInfoLogic.GetToShowItem(selectedFilters, sortBy, othersCheck_Toggle.value, MinSizeInMB);
 
 		SetPackedAssetsInfo(res);
+	}
+}
+class SceneUsageListItemVE : VisualElement
+{
+	public SceneUsageListItemVE()
+	{
+
+	}
+	public void SetData(string sceneSTR)
+	{
+		this.Clear();
+		string[] Splited = sceneSTR.Split('(');
+		string sceneNumber = Splited[0];
+		string scenePath = Splited[1].Replace(")", "");
+		string sceneName = scenePath.Split('/').Last();
+
+		Label NumberLabel = new Label(sceneNumber);
+		NumberLabel.style.backgroundColor = Color.white;
+		NumberLabel.style.color = Color.black;
+		int margin = 2;
+		NumberLabel.style.marginBottom = margin;
+		NumberLabel.style.marginTop = margin;
+		NumberLabel.style.marginLeft = margin;
+		NumberLabel.style.marginRight = margin;
+		NumberLabel.style.paddingBottom = margin;
+		NumberLabel.style.paddingTop = margin;
+		NumberLabel.style.paddingLeft = margin;
+		NumberLabel.style.paddingRight = margin;
+
+
+		Label NameLabel = new Label(sceneName);
+		NameLabel.style.flexGrow = 1;
+		NameLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+		Label PathLabel = new Label(scenePath);
+		PathLabel.style.flexGrow = 1;
+		PathLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+		this.style.flexDirection = FlexDirection.Row;
+
+
+		VisualElement UnityIcon = new VisualElement();
+		UnityIcon.style.width = 22;
+		UnityIcon.style.height = 22;
+		Texture2D icon = IconsLibrary.Instance.Core.GetIcon("UnityWhite");
+		UnityIcon.style.backgroundImage = icon;
+		Add(UnityIcon);
+		Add(NameLabel);
+		Add(NumberLabel);
+		Add(PathLabel);
 	}
 }

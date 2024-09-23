@@ -60,7 +60,7 @@ public class BuildReportDeepContentVE
 				Content.Add(buildStepsVE);
 				break;
 			case ContentType.PackedAssets:
-				BuildReportPackedAssetsVE packedAssetsVE = new BuildReportPackedAssetsVE(report.packedAssets);
+				BuildReportPackedAssetsVE packedAssetsVE = new BuildReportPackedAssetsVE(report);
 				PackedAssets_Content = packedAssetsVE.GetVE();
 				Content.Add(PackedAssets_Content);
 				break;

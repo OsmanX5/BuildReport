@@ -106,7 +106,6 @@ public class BuildReportSummaryVE
 	}
 	private void SetTotalize(ulong totalSize)
 	{
-		Debug.Log("Total Size: " + totalSize);
 		TotalSize_IconInfo.Q<Label>("Value").text = totalSize.FormatSize();
 		TotalSize_IconInfo.Q<VisualElement>("Icon").style.backgroundImage = IconsLibrary.Instance.Core.GetIcon("Size");
 	}

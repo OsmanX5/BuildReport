@@ -35,12 +35,13 @@ public class IconLibrary
 {
 	[SerializeField] List<Texture2D> Icons;
 	string NotFoundIconPath = "Assets/BuildReportTool/Editor/Icons/Core/not-found.png";
-	public Texture2D GetIcon(string name)
+	public Texture2D GetIcon(string name,int w= 64,int h = 64)
 	{
 		foreach (var item in Icons)
 		{
 			if (item.name == name)
 			{
+				
 				return item;
 			}
 		}

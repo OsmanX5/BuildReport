@@ -1,11 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/BuildReportTool/Editor/UI/BuildReportTool.uss?fileID=7433441132597879392&amp;guid=4905ddb15f31a8d42b9f3f0ec251bef9&amp;type=3#BuildReportTool" />
-    <ui:VisualElement name="root" style="flex-grow: 1;">
+    <ui:VisualElement name="root" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/2DImages/grey_hexagons_on_black_background.jpg?fileID=2800000&amp;guid=71abdac64d7d4d546a73a0659dbd5376&amp;type=3#grey_hexagons_on_black_background&quot;); -unity-background-scale-mode: scale-and-crop; -unity-background-image-tint-color: rgba(255, 255, 255, 0.2);">
         <ui:VisualElement name="Header" style="flex-grow: 0; flex-shrink: 0;">
             <ui:Label tabindex="-1" text="Build Report Tool" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Titel" style="align-self: center;" />
         </ui:VisualElement>
         <ui:VisualElement name="Body_VE" style="flex-grow: 1;">
-            <uie:ObjectField label="Object Field" type="UnityEditor.Build.Reporting.BuildReport, UnityEditor.CoreModule" name="BuildReport_ObjectField" allow-scene-objects="false" style="flex-shrink: 1;" />
+            <ui:VisualElement style="flex-grow: 0; flex-direction: row;">
+                <uie:ObjectField label="Active build Report" type="UnityEditor.Build.Reporting.BuildReport, UnityEditor.CoreModule" name="BuildReport_ObjectField" allow-scene-objects="false" style="flex-shrink: 1; flex-grow: 1;" />
+                <ui:Button text="Deep Build" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NewBuild_Btn" enable-rich-text="false" />
+                <ui:Button text="Import Last Build report" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveReport_Btn" tooltip="import the last build report to assets file" />
+            </ui:VisualElement>
             <ui:VisualElement name="BuildReportContent_VE" style="flex-basis: auto; flex-grow: 1;" />
         </ui:VisualElement>
         <ui:VisualElement name="Footer" style="flex-grow: 0; justify-content: flex-end; flex-shrink: 0;">

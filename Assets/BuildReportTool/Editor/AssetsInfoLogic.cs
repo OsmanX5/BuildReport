@@ -7,13 +7,13 @@ using System.Linq;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class AssetsInfoLogic 
 {
 	const int MAX_ASSETS_TO_SHOW = 100;
 	const int NUMBER_OF_TOP_TYPES = 8;
 	PackedAssetInfo[] toShowAssetsInfo;	
 	public Dictionary<Type, TypeInfoData> TopTypesInfoData { get; private set; }
+	Dictionary<string, string[]> AssetsScenesDict;
 	public TypeInfoData OtherTypesInfosData { get; private set; }
 	List<Type> OtherTypes;
 	ulong minAssetSize = 0;
@@ -27,10 +27,11 @@ public class AssetsInfoLogic
 	{
 		get => MaxAssetSize.GetSizeInMB();
 	}
-	public AssetsInfoLogic(IEnumerable<PackedAssets> packedAssets)
+	public AssetsInfoLogic(BuildReport builreport)
 	{
-
-        List<PackedAssetInfo> temp = new List<PackedAssetInfo>();
+		var packedAssets = builreport.packedAssets;
+		CreateSceneDict(builreport.scenesUsingAssets);
+		List<PackedAssetInfo> temp = new List<PackedAssetInfo>();
 		foreach (PackedAssets packedAsset in packedAssets)
 			temp.AddRange(packedAsset.contents);
 		Init(temp);
@@ -39,6 +40,15 @@ public class AssetsInfoLogic
 	PackedAssetInfo[] allPackedAssetsInfoSorted;
 	void Init(IEnumerable<PackedAssetInfo> packedAssetsInfo)
 	{
+		if(packedAssetsInfo.Count() == 0)
+		{
+			TotalBuildSize = 0;
+			TopTypesInfoData = new Dictionary<Type, TypeInfoData>();
+			OtherTypesInfosData = new(0, 0, 0);
+			OtherTypes = new List<Type>();
+			Debug.LogWarning("No Assets Found");
+			return;
+		}
 		// Cash All Assets
 		allPackedAssetsInfoSorted = packedAssetsInfo.OrderByDescending(x => x.packedSize).ToArray();
 		allPackedAssetsInfoGrouped = allPackedAssetsInfoSorted.GroupBy(x => x.type).ToDictionary(x => x.Key, x => x.ToArray());
@@ -56,7 +66,7 @@ public class AssetsInfoLogic
 		
 		ulong otherTypesTotalSize = (ulong)otherTypesInfos.Values.Sum(x => (decimal)x.TypeTotalSize);
 		OtherTypesInfosData = new(otherTypesInfos.Count(), otherTypesTotalSize, TotalBuildSize);
-
+		
 		minAssetSize = allPackedAssetsInfoSorted.Min(x => x.packedSize);
 		MaxAssetSize = allPackedAssetsInfoSorted.Max(x => x.packedSize);
 	}
@@ -93,6 +103,37 @@ public class AssetsInfoLogic
 		}
 		return toShowAssetsInfo;
 		
+	}
+
+	void CreateSceneDict(ScenesUsingAssets[] scenesUsingAssets)
+	{
+		
+		AssetsScenesDict = new Dictionary<string, string[]>();
+		try
+		{
+			foreach (ScenesUsingAssets scene in scenesUsingAssets)
+			{
+				foreach(var assetSceneInfo in scene.list)
+				{
+					AssetsScenesDict.Add(assetSceneInfo.assetPath, assetSceneInfo.scenePaths);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Debug.LogError("Error in CreateSceneDict: " + e.Message);
+		}
+	}
+
+	public string[] GetScenesForAsset(string assetPath)
+	{
+		if (AssetsScenesDict.ContainsKey(assetPath))
+			return AssetsScenesDict[assetPath];
+		return new string[0];
+	}
+	public string[] GetScenesForAsset(PackedAssetInfo assetInfo)
+	{
+		return GetScenesForAsset(assetInfo.sourceAssetPath);
 	}
 
 }
