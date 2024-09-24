@@ -221,70 +221,11 @@ public class BuildReportPackedAssetsVE : VisualElement
 	private void UpdateTheAssetCardWithThisInde(int index)
 	{
 		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
-
-		Label AssetName_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetName_Label));
-		Label AssetPath_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetPath_Label));
-		Label AssetSize_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetSize_Label));
-		Label AssetType_Label = SelectedAssetCardVE.Q<Label>(nameof(AssetType_Label));
-		VisualElement CustomInfoVE = SelectedAssetCardVE.Q<VisualElement>(nameof(CustomInfoVE));
-		ListView AssetUsingScenes_ListView = SelectedAssetCardVE.Q<ListView>(nameof(AssetUsingScenes_ListView));
-		VisualElement AssetIcon_VE = SelectedAssetCardVE.Q<VisualElement>(nameof(AssetIcon_VE));
-
-
-		AssetName_Label.text = Path.GetFileNameWithoutExtension(info.sourceAssetPath);
-		AssetPath_Label.text = info.sourceAssetPath ;
-		AssetType_Label.text = info.type.ToString();
-		AssetSize_Label.text = info.packedSize.FormatSize();
-		Texture2D cashedIcon = AssetPreview.GetAssetPreview(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(info.sourceAssetPath));
-		AssetIcon_VE.style.backgroundImage = cashedIcon;
-		
-		CustomInfoVE.style.display = DisplayStyle.None;
-		CustomInfoVE.Clear();
-		if (info.type == typeof(Mesh))
-		{
-			
-			CustomInfoVE.style.display = DisplayStyle.Flex;
-			Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(info.sourceAssetPath);
-			int vertexCount = mesh.vertexCount;
-			CustomInfoVE.Add(new Label($"Vertex Count: {vertexCount}"));
-			
-		}
-		else if(info.type.IsSubclassOf(typeof(Texture) ))
-		{
-			CustomInfoVE.style.display = DisplayStyle.Flex;
-			Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(info.sourceAssetPath);
-			if(texture == null)
-			{
-				return;
-			}
-			int textureSize = texture.width;
-			int textureHeight = texture.height;
-			Debug.Log(textureSize);
-			CustomInfoVE.Add(new Label($"Texture Size : {textureSize} X {textureHeight}"));
-		}
-
 		string[] scenes = assetsInfoLogic.GetScenesForAsset(info.sourceAssetPath);
-		if(scenes.Length == 0)
-		{
-			AssetUsingScenes_ListView.style.display = DisplayStyle.None;
-		}
-		else
-		{
-			AssetUsingScenes_ListView.style.display = DisplayStyle.Flex;
-
-			AssetUsingScenes_ListView.itemsSource = scenes;
-			AssetUsingScenes_ListView.makeItem = () => new SceneUsageListItemVE();
-			AssetUsingScenes_ListView.bindItem = (element, i) => (element as SceneUsageListItemVE).SetData(scenes[i]);
-			AssetUsingScenes_ListView.itemsChosen += (enumerable) =>
-			{
-				foreach (string selected in enumerable)
-				{
-					string path = selected.Split('(')[1].Replace(")", "");
-					EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path));
-				}
-			};
-			AssetUsingScenes_ListView.Rebuild();
-		}
+		SelectedAssetCardVE newCard = new SelectedAssetCardVE();
+		newCard.SetData(info, scenes);
+		SelectedAssetCardVE.Clear();
+		SelectedAssetCardVE.Add(newCard);
 	}
 
 

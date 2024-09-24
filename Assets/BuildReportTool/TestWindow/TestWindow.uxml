@@ -1,5 +1,7 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/BuildReportTool/TestWindow/TestWindow.uss?fileID=7433441132597879392&amp;guid=9e87d03ac3642a0448681821ed16b3f6&amp;type=3#TestWindow" />
+    <uie:ObjectField label="Object Field" name="ObjectField" />
     <ui:Label text="Hello World! From UXML" />
-    <ui:Label text="Hello World! With Style" class="custom-label" />
+    <ui:Label text="Hello World! With Style" name="Label" class="custom-label" />
+    <ui:VisualElement name="CardHolder" style="flex-grow: 1;" />
 </ui:UXML>

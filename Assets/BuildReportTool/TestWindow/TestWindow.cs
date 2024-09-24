@@ -1,4 +1,7 @@
+using System;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,11 +16,25 @@ public class TestWindow : EditorWindow
         TestWindow wnd = GetWindow<TestWindow>();
         wnd.titleContent = new GUIContent("TestWindow");
     }
+	ObjectField m_ObjectField;
+	VisualElement CardHolder;
 
-    public void CreateGUI()
+	public void CreateGUI()
     {
-        // Each editor window contains a root VisualElement object
-        VisualElement root = rootVisualElement;
-        root.Add(new SelectedAssetCardVE());
-    }
+		Debug.Log(AssetDatabase.GetAssetPath(m_VisualTreeAsset));
+        Debug.Log("CreateGUI");
+		m_VisualTreeAsset.CloneTree(rootVisualElement);
+		CardHolder = rootVisualElement.Q<VisualElement>("CardHolder");
+		m_ObjectField = rootVisualElement.Q<ObjectField>("ObjectField");
+        m_ObjectField.RegisterValueChangedCallback(OnObjectFieldChanged);
+
+	}
+
+	private void OnObjectFieldChanged(ChangeEvent<UnityEngine.Object> evt)
+	{
+		Debug.Log("OnObjectFieldChanged");
+		CardHolder.Clear();
+		SelectedAssetCardVE selectedAssetCardVE = new SelectedAssetCardVE();
+		CardHolder.Add(selectedAssetCardVE);
+	}
 }
