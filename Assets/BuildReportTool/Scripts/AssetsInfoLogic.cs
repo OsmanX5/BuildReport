@@ -8,7 +8,7 @@ using UnityEngine;
 public class AssetsInfoLogic 
 {
 	const int MAX_ASSETS_TO_SHOW = 100;
-	const int NUMBER_OF_TOP_TYPES = 8;
+	const int NUMBER_OF_TOP_TYPES = 5;
 	PackedAssetInfo[] toShowAssetsInfo;	
 	public Dictionary<Type, TypeInfoData> TopTypesInfoData { get; private set; }
 	Dictionary<string, string[]> AssetsScenesDict;
@@ -68,23 +68,45 @@ public class AssetsInfoLogic
 		minAssetSize = allPackedAssetsInfoSorted.Min(x => x.packedSize);
 		MaxAssetSize = allPackedAssetsInfoSorted.Max(x => x.packedSize);
 	}
-	public PackedAssetInfo[] GetToShowItem(HashSet<Type> selectedTypesFilters , SortByType sortBy, bool showOtherTypesFilters,float MinSizeInMB = 0)
+	public PackedAssetInfo[] GetToShowItem(AssetsFiltersData filtersData = null)
 	{
 		toShowAssetsInfo = new PackedAssetInfo[MAX_ASSETS_TO_SHOW];
 		int addedAssets = 0;
+		if(filtersData == null)
+		{
+			return allPackedAssetsInfoSorted.Take(MAX_ASSETS_TO_SHOW).ToArray();
+		}
 		for(int i=0; i< allPackedAssetsInfoSorted.Length; i++)
 		{
+			PackedAssetInfo assetInfo = allPackedAssetsInfoSorted[i];
 			if (addedAssets >= MAX_ASSETS_TO_SHOW)
 				break;
-			if (!selectedTypesFilters.Contains(allPackedAssetsInfoSorted[i].type))
+			if (filtersData.IncludedTypes.Contains(assetInfo.type) == false)
 				continue;
-			if (allPackedAssetsInfoSorted[i].packedSize.GetSizeInMB() < MinSizeInMB)
+			if (assetInfo.packedSize.GetSizeInMB() < filtersData.MinAssetSize)
 				continue;
-			toShowAssetsInfo[addedAssets] = allPackedAssetsInfoSorted[i];
+			if (assetInfo.packedSize.GetSizeInMB() > filtersData.MaxAssetSize)
+				continue;
+            /*if (StartWithTags != null)
+			{
+				bool found = false;
+				foreach (string tag in StartWithTags)
+				{
+					if (assetInfo.sourceAssetPath.StartsWith(tag))
+					{
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					continue;
+			}
+            */
+			toShowAssetsInfo[addedAssets] = assetInfo;
 			addedAssets++;
 		}
 		toShowAssetsInfo = toShowAssetsInfo.Take(addedAssets).ToArray();
-		switch (sortBy)
+		switch (filtersData.SortByType)
 		{
 			case SortByType.Size:
 				toShowAssetsInfo = toShowAssetsInfo.OrderBy(info => 0 - info.packedSize).ToArray();

@@ -1,25 +1,32 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:Template name="SelectedAssetCardVE" src="project://database/Assets/BuildReportTool/Editor/VisualElements/BuildReportToolElements/SelectedAssetCardVE.uxml?fileID=9197481963319205126&amp;guid=04a95c08ac8b9a54d8fc8fef7811435e&amp;type=3#SelectedAssetCardVE" />
+    <Style src="project://database/Assets/BuildReportTool/Editor/BuildReportToolWindow/BuildReportTool.uss?fileID=7433441132597879392&amp;guid=4905ddb15f31a8d42b9f3f0ec251bef9&amp;type=3#BuildReportTool" />
     <ui:VisualElement name="Base" style="flex-grow: 1; flex-basis: auto; flex-direction: column;">
-        <ui:Instance template="SelectedAssetCardVE" name="SelectedAssetCardVE" />
         <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-            <ui:ScrollView>
+            <ui:ScrollView style="flex-basis: 40%;">
                 <ui:VisualElement name="SideOptionsVE" style="flex-grow: 1; flex-basis: auto;">
-                    <ui:RadioButtonGroup label="Sort By" value="-1" name="SortBy_RadioBtnGroup" style="flex-direction: column; margin-top: 10px; margin-bottom: 10px;" />
-                    <ui:GroupBox name="TypesToShowChecks_GroupBox" text="Show" style="flex-grow: 0;" />
-                    <ui:VisualElement name="SelectAllOrNonVE" style="flex-grow: 0; flex-direction: row;">
-                        <ui:Button text="Select All" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelecAll_Btn" focusable="false" />
-                        <ui:Button text="None" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectNone_Btn" focusable="false" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="MinAssetSizeVE" style="flex-grow: 0; margin-top: 10px; margin-bottom: 10px; -unity-text-align: middle-center; padding-right: 10px; padding-left: 10px;">
-                        <ui:Label tabindex="-1" text="Minumum Asset Size" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-                        <ui:Slider high-value="10" name="MinAssetSize_Slider" direction="Horizontal" page-size="0" />
-                        <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MinAssetSize_Label" />
+                    <ui:VisualElement name="SelectedAssetCardVE" style="flex-grow: 0;">
+                        <ui:Instance template="SelectedAssetCardVE" name="SelectedAssetCardVE" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:ScrollView>
-            <ui:VisualElement name="AssetsDataSide" style="flex-grow: 1;">
-                <ui:ListView name="packedAssets_ListView" header-title="Packed Assets" show-foldout-header="false" show-add-remove-footer="false" show-bound-collection-size="true" virtualization-method="FixedHeight" fixed-item-height="30" style="flex-grow: 1; flex-wrap: wrap;" />
+            <ui:VisualElement name="AssetsDataSide" style="flex-grow: 1; flex-basis: 60%;">
+                <ui:Foldout text="Filters" name="FiltersFoldout" class="BuildReportTool-floatBox">
+                    <ui:GroupBox name="GroupBox" style="flex-direction: row; flex-wrap: wrap;">
+                        <ui:VisualElement style="flex-grow: 1;">
+                            <ui:RadioButtonGroup label="Sort By" value="-1" name="SortBy_RadioBtnGroup" style="flex-direction: column; margin-top: 10px; margin-bottom: 10px;" />
+                            <ui:VisualElement name="FilesFilter" style="flex-grow: 1;">
+                                <ActiveButton text="Assets" is-pressed="true" unpressed-color="#484848FF" pressed-color="#EB5461FF" focusable="false" name="Assets_ActiveButton" />
+                                <ActiveButton text="Packges" is-pressed="true" unpressed-color="#7373739D" pressed-color="#006D9CFF" focusable="false" name="Packges_ActiveButton" />
+                                <ActiveButton text="Others" is-pressed="true" unpressed-color="#30303035" pressed-color="#808080FF" focusable="false" name="Others_ActiveButton" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ToggleGroup title="Show Types" choices="t1,t2,t3,Others" name="Types_ToggleGroup" />
+                    </ui:GroupBox>
+                    <ui:Label tabindex="-1" text="Include Size" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                    <ui:MinMaxSlider min-value="10" max-value="12" low-limit="-10" high-limit="40" name="AssetSize_MinMaxSlider" style="flex-direction: column-reverse; -unity-text-align: middle-center;" />
+                </ui:Foldout>
+                <ui:ListView name="packedAssets_ListView" header-title="Packed Assets" show-foldout-header="false" show-add-remove-footer="false" show-bound-collection-size="true" virtualization-method="FixedHeight" fixed-item-height="30" class="BuildReportTool-floatBox" style="flex-grow: 1; flex-wrap: wrap;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

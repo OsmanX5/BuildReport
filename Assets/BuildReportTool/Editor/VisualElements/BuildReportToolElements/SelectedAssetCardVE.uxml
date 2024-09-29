@@ -1,22 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <ui:VisualElement name="SelectedAssetCardVE" style="flex-grow: 0; flex-basis: 130px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Assets/2DImages/BluryBackground.jpg?fileID=2800000&amp;guid=80893f34cccbc8b4e8f6bbc69c0aaeeb&amp;type=3#BluryBackground&quot;); -unity-background-image-tint-color: rgba(255, 255, 255, 0.16); -unity-background-scale-mode: scale-and-crop; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; flex-shrink: 2; flex-direction: row; align-items: center; display: flex;">
-        <ui:VisualElement name="LeftSide" style="flex-grow: 0; flex-basis: 20%;">
-            <ui:VisualElement name="AssetIcon_VE" style="flex-grow: 0; width: 64px; height: 64px; align-self: center; background-image: url(&quot;project://database/Assets/BuildReportTool/Editor/Assets/Icons/Types/3DModel.png?fileID=2800000&amp;guid=5e39cf7e1c8de6840b05e1607be2dbe1&amp;type=3#3DModel&quot;); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;" />
-            <ui:Label tabindex="-1" text="Select asset" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AssetName_Label" style="-unity-text-align: middle-center; white-space: normal;" />
+    <Style src="project://database/Assets/BuildReportTool/Editor/BuildReportToolWindow/BuildReportTool.uss?fileID=7433441132597879392&amp;guid=4905ddb15f31a8d42b9f3f0ec251bef9&amp;type=3#BuildReportTool" />
+    <ui:VisualElement name="SelectedAssetCardVE" class="BuildReportTool-floatBox">
+        <ui:VisualElement name="Up">
+            <UnityObjectPreview preview-size="Medium" name="UnityObjectPreview" />
             <ui:Label tabindex="-1" text="25 MB" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AssetSize_Label" style="-unity-text-align: middle-center; white-space: normal; margin-top: 6px; margin-bottom: 6px; -unity-font: url(&apos;project://database/Assets/TextMesh%20Pro/Examples%20&amp;%20Extras/Fonts/Electronic%20Highway%20Sign.TTF?fileID=12800000&amp;guid=8a2b9e2a607dd2143b58c44bc32410b4&amp;type=3#Electronic Highway Sign&apos;); font-size: 18px; -unity-font-style: bold;" />
         </ui:VisualElement>
-        <ui:VisualElement name="RightSide" style="flex-grow: 1;">
-            <ui:VisualElement name="AssetPath" style="flex-grow: 0; flex-direction: row;">
-                <ui:Label tabindex="-1" text="Asset Path :" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
-                <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AssetPath_Label" style="white-space: normal; text-overflow: ellipsis;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="AssetType" style="flex-grow: 0; flex-direction: row;">
-                <ui:Label tabindex="-1" text="Type  :" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
-                <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AssetType_Label" style="white-space: normal; text-overflow: ellipsis;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="CustomInfoVE" style="flex-grow: 1;" />
-            <ui:ListView header-title="Used In Scenes" name="AssetUsingScenes_ListView" show-foldout-header="true" show-alternating-row-backgrounds="None" show-bound-collection-size="false" style="flex-grow: 2;" />
-            <ui:Label tabindex="-1" text="Note : Optmization Options will added here soon : )" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: italic; color: rgb(245, 224, 50);" />
+        <ui:VisualElement name="Bottom">
+            <TiteledLabel title="Path" name="AssetPath_TitledLabel" fontSize="10" />
+            <TiteledLabel title="Type" name="AssetType_TitledLabel" fontSize="10" />
+            <ui:VisualElement name="CustomInfoVE" />
+            <ui:ListView header-title="Used In Scenes" name="AssetUsingScenes_ListView" show-foldout-header="true" show-alternating-row-backgrounds="None" show-bound-collection-size="false" style="max-height: 100px;" />
+            <ui:Label tabindex="-1" text="Note : Optmization Options will added here soon : )" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: italic; color: rgb(245, 224, 50); white-space: normal;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

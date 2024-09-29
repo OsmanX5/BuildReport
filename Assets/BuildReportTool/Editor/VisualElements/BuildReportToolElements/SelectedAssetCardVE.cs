@@ -10,17 +10,21 @@ using UnityEngine.UIElements;
 
 public class SelectedAssetCardVE : VisualElement
 {
-	/// <summary>
-	/// Visual Elements
-	/// </summary>
-	Label AssetName_Label;
-	Label AssetPath_Label;
+	#region Visual ELements Variables
+	
+	VisualTreeAsset m_VisualTreeAsset = default;
+	UnityObjectPreview UnityObjectPreview;
+
+	TiteledLabel AssetPath_TitledLabel;
+	TiteledLabel AssetType_TitledLabel;
 	Label AssetSize_Label;
-	Label AssetType_Label;
 	VisualElement CustomInfoVE;
 	ListView AssetUsingScenes_ListView;
-	VisualElement AssetIcon_VE;
 
+
+	#endregion
+
+	#region Logic Variables
 	UnityEngine.Object assetObject;
 	public UnityEngine.Object AssetObject
 	{
@@ -30,6 +34,8 @@ public class SelectedAssetCardVE : VisualElement
 			assetObject = value;
 		}
 	}
+	
+	
 	PackedAssetInfo buildInfo;
 	public PackedAssetInfo BuildInfo
 	{
@@ -39,6 +45,8 @@ public class SelectedAssetCardVE : VisualElement
 			buildInfo = value;
 		}
 	}
+	
+	
 	string[] scenePaths;
 	public string[] ScenePaths
 	{
@@ -53,7 +61,8 @@ public class SelectedAssetCardVE : VisualElement
 	ulong assetSizeOnBuild;
 	Type assetType;
 	string assetPath;
-	private VisualTreeAsset m_VisualTreeAsset = default;
+	#endregion
+
 
 	public SelectedAssetCardVE()
 	{
@@ -66,6 +75,17 @@ public class SelectedAssetCardVE : VisualElement
 		m_VisualTreeAsset.CloneTree(this);
 		QueryElements();
 	}
+	private void QueryElements()
+	{
+		UnityObjectPreview = this.Q<UnityObjectPreview>(nameof(UnityObjectPreview));
+		AssetSize_Label = this.Q<Label>(nameof(AssetSize_Label));
+		
+		AssetPath_TitledLabel = this.Q<TiteledLabel>(nameof(AssetPath_TitledLabel));
+		AssetType_TitledLabel = this.Q<TiteledLabel>(nameof(AssetType_TitledLabel));
+
+		AssetUsingScenes_ListView = this.Q<ListView>(nameof(AssetUsingScenes_ListView));
+		CustomInfoVE = this.Q<VisualElement>(nameof(CustomInfoVE));
+	}
 	public void SetData(UnityEngine.Object assetObject)
 	{
 		AssetObject = assetObject;
@@ -75,6 +95,11 @@ public class SelectedAssetCardVE : VisualElement
 	{
 		BuildInfo = buildInfo;
 		AssetObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(buildInfo.sourceAssetPath);
+		if(AssetObject == null)
+		{
+			Debug.LogError("Asset Object is null");
+			return;
+		}
 		UpdateObjectDataAndView();
 		UpdateBuildInfoDataAndView();
 		if(scenePaths != null)
@@ -84,45 +109,40 @@ public class SelectedAssetCardVE : VisualElement
 		}
 	}
 
-
-	private void QueryElements()
-	{
-		AssetName_Label = this.Q<Label>(nameof(AssetName_Label));
-		AssetPath_Label = this.Q<Label>(nameof(AssetPath_Label));
-		AssetSize_Label = this.Q<Label>(nameof(AssetSize_Label));
-		AssetType_Label = this.Q<Label>(nameof(AssetType_Label));
-		CustomInfoVE = this.Q<VisualElement>(nameof(CustomInfoVE));
-		AssetUsingScenes_ListView = this.Q<ListView>(nameof(AssetUsingScenes_ListView));
-		AssetIcon_VE = this.Q<VisualElement>(nameof(AssetIcon_VE));
-
-	}
 	void UpdateObjectDataAndView()
 	{
-		
-		assetPath = AssetDatabase.GetAssetPath(assetObject);
-		AssetPath_Label.text = assetPath;
-
-
+		UnityObjectPreview.TargetObject  = assetObject;
+		try
+		{
+			assetPath = AssetDatabase.GetAssetPath(assetObject);
+			AssetPath_TitledLabel.Label = assetPath;
+		}
+		catch (Exception e)
+		{
+			AssetPath_TitledLabel.Label = "Didn't Find Asset Path check if it is valid Unity Object";
+			return;
+		}
 		assetName = Path.GetFileNameWithoutExtension(assetPath);
-		AssetName_Label.text = assetName;
-		
-		
+
 		try
 		{
 			assetType = assetObject.GetType();
-			AssetType_Label.text = $"{assetType.Name}  [{assetType.ToString()}]";
+			AssetType_TitledLabel.Label= $"{assetType.Name}  [{assetType.ToString()}]";
 		}
 		catch (Exception e)
 		{
 			Debug.Log("UnKnown Type");
-			AssetType_Label.text = "UnKnown Type";
+			AssetType_TitledLabel.Label = "UnKnown Type";
 			return;
 		}
 
 
+		CreateCustomTypeData();
 
-		Texture2D previewIcon = AssetPreview.GetAssetPreview(assetObject);
-		AssetIcon_VE.style.backgroundImage = previewIcon;
+	}
+
+	private void CreateCustomTypeData()
+	{
 		CustomInfoVE.style.display = DisplayStyle.None;
 		CustomInfoVE.Clear();
 		if (assetType.IsSubclassOf(typeof(Mesh)))
@@ -144,10 +164,11 @@ public class SelectedAssetCardVE : VisualElement
 			}
 			int textureSize = texture.width;
 			int textureHeight = texture.height;
-			Debug.Log(textureSize);
-			CustomInfoVE.Add(new Label($"Texture Size : {textureSize} X {textureHeight}"));
-		}		
+			TiteledLabel textureSizeLabel = new TiteledLabel("Texture Size", $"{textureSize} X {textureHeight}",10);
+			CustomInfoVE.Add(textureSizeLabel);
+		}
 	}
+
 	void UpdateBuildInfoDataAndView()
 	{
 		assetSizeOnBuild = buildInfo.packedSize;

@@ -1,25 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Template name="LabelIcon64" src="project://database/Assets/BuildReportTool/Editor/CustomVisualElements/Templates/LabelIcon.uxml?fileID=9197481963319205126&amp;guid=750f164b1d137714d93c8e8ec6beb471&amp;type=3#LabelIcon" />
-    <ui:Template name="IconText" src="project://database/Assets/BuildReportTool/Editor/CustomVisualElements/Templates/IconInfo.uxml?fileID=9197481963319205126&amp;guid=0de34320ffff5384f8ba8401647d3986&amp;type=3#IconInfo" />
-    <ui:VisualElement name="BuildReportSummary_VE" style="padding-right: 30px; padding-left: 30px; padding-bottom: 10px; padding-top: 10px; align-items: center;">
-        <ui:Label tabindex="-1" text="Build Summary" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-text-align: upper-center; -unity-font-style: bold; font-size: 20px;" />
-        <ui:VisualElement name="Data" style="flex-direction: row; padding-top: 5px; padding-right: 10px; padding-bottom: 5px; padding-left: 10px; justify-content: flex-start;">
-            <ui:Instance template="LabelIcon64" name="Platform_LabelIcon">
-                <AttributeOverrides element-name="Label" text="gfdgsdfgsdfgfdgfdgfdsgdfs" />
-            </ui:Instance>
-            <ui:Instance template="LabelIcon64" name="SummaryResult_LabelIcon" style="align-self: auto; flex-grow: 0;" />
-            <ui:VisualElement name="SummaryData_VE" style="flex-grow: 0; flex-direction: row; align-items: stretch; align-self: auto;">
-                <ui:VisualElement style="flex-grow: 1;">
-                    <ui:Instance template="IconText" name="TotalSize_IconInfo" />
-                    <ui:Instance template="IconText" name="TotalTime_IconInfo" />
-                </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 1;">
-                    <ui:Instance template="IconText" name="TotalWarnings_IconInfo" />
-                    <ui:Instance template="IconText" name="TotalErrors_IconInfo">
-                        <AttributeOverrides element-name="Value" text="2" />
-                    </ui:Instance>
-                </ui:VisualElement>
-            </ui:VisualElement>
+    <ui:VisualElement name="BuildReportSummary_VE">
+        <ui:Label tabindex="-1" text="Build Summary" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-text-align: upper-center; -unity-font-style: bold; font-size: 20px; align-items: auto;" />
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:VisualElement name="CoreData_VE" style="flex-direction: row; justify-content: space-around; flex-wrap: wrap;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

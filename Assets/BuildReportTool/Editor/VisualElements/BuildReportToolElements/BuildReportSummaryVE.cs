@@ -10,18 +10,21 @@ using UnityEngine.UIElements;
 public class BuildReportSummaryVE 
 {
 	const string templatePath = "Assets/BuildReportTool/Editor/VisualElements/BuildReportToolElements/BuildReportSummaryVE.uxml";
-
-	VisualElement Platform_LabelIcon; // update in future to use Label icon type
-	VisualElement SummaryResult_LabelIcon; 
-	VisualElement TotalSize_IconInfo;
-	VisualElement TotalTime_IconInfo;
-	VisualElement TotalWarnings_IconInfo;
-	VisualElement TotalErrors_IconInfo;
 	BuildSummary summaryData;
+
+	
+	VisualElement CoreData_VE;
+
+	IconedLabel Platform_IconedLabel; 
+	IconedLabel SummaryResult_IconedLabel; 
+	IconedLabel TotalSize_IconedLabel;
+	IconedLabel TotalTime_IconedLabel;
+	IconedLabel TotalWarnings_IconedLabel;
+	IconedLabel TotalErrors_IconedLabel;
+
 	public BuildReportSummaryVE(BuildSummary summaryData)
 	{
 		this.summaryData = summaryData;
-
     }
 
 	public VisualElement GetVE()
@@ -36,23 +39,28 @@ public class BuildReportSummaryVE
 		SetTotalTime(summaryData.totalTime);
 		SetTotalWarnings(summaryData.totalWarnings);
 		SetTotalErrors(summaryData.totalErrors);
+		AddCoreDataElements();
 		return result.Children().ToList()[0];
 	}
+
+
 	public void QueryVisualElements(VisualElement baseVE)
 	{
-		SummaryResult_LabelIcon = baseVE.Q<VisualElement>(nameof(SummaryResult_LabelIcon));
-		Platform_LabelIcon = baseVE.Q<VisualElement>(nameof(Platform_LabelIcon));
-		TotalSize_IconInfo = baseVE.Q<VisualElement>(nameof(TotalSize_IconInfo));
-		TotalTime_IconInfo = baseVE.Q<VisualElement>(nameof(TotalTime_IconInfo));
-		TotalWarnings_IconInfo = baseVE.Q<VisualElement>(nameof(TotalWarnings_IconInfo));
-		TotalErrors_IconInfo = baseVE.Q<VisualElement>(nameof(TotalErrors_IconInfo));
+		CoreData_VE = baseVE.Q<VisualElement>("CoreData_VE");
+	}
+	private void AddCoreDataElements()
+	{
+		CoreData_VE.Add(Platform_IconedLabel);
+		CoreData_VE.Add(SummaryResult_IconedLabel);
+		CoreData_VE.Add(TotalSize_IconedLabel);
+		CoreData_VE.Add(TotalTime_IconedLabel);
+		CoreData_VE.Add(TotalWarnings_IconedLabel);
+		CoreData_VE.Add(TotalErrors_IconedLabel);
+
 	}
 
 	private void SetSummeryResult(BuildResult result)
 	{
-		SummaryResult_LabelIcon.Q<Label>("Label").text = result.ToString();
-		VisualElement iconVE = SummaryResult_LabelIcon.Q<VisualElement>("Icon");
-		
 		Texture2D icon = null;
 		switch(result)
 		{
@@ -69,12 +77,10 @@ public class BuildReportSummaryVE
 				icon = IconsLibrary.Instance.Core.GetIcon("Unknown");
 				break;
 		}
-		iconVE.style.backgroundImage = icon;
-
+		SummaryResult_IconedLabel = new IconedLabel(icon, result.ToString());
 	}
 	private void SetPlatform(BuildTarget platform)
 	{
-		VisualElement iconVE = Platform_LabelIcon.Q<VisualElement>("Icon");
 		Texture2D icon = null;
 		string resultStr = platform.ToString();
 		switch (platform)
@@ -100,33 +106,28 @@ public class BuildReportSummaryVE
 				icon = IconsLibrary.Instance.Platforms.GetIcon("Unknown");
 				break;
 		}
-		Platform_LabelIcon.Q<Label>("Label").text = resultStr;
-		iconVE.style.backgroundImage = icon;
+		Platform_IconedLabel = new IconedLabel(icon, resultStr);
 	}
 	private void SetTotalize(ulong totalSize)
 	{
-		TotalSize_IconInfo.Q<Label>("Value").text = totalSize.FormatSize();
-		TotalSize_IconInfo.Q<VisualElement>("Icon").style.backgroundImage = IconsLibrary.Instance.Core.GetIcon("Size");
+		Texture2D sizeIcon = IconsLibrary.Instance.Core.GetIcon("Size");
+		TotalSize_IconedLabel = new IconedLabel(sizeIcon, totalSize.FormatSize());
 	}
 	private void SetTotalTime(TimeSpan totalTime)
 	{
-		TotalTime_IconInfo.Q<Label>("Value").text = totalTime.FormatTime();
-		TotalTime_IconInfo.Q<VisualElement>("Icon").style.backgroundImage = IconsLibrary.Instance.Core.GetIcon("Time");
+		Texture2D timeIcon = IconsLibrary.Instance.Core.GetIcon("Time");
+		string TimeAsString = totalTime.FormatTime();
+		TotalTime_IconedLabel = new IconedLabel(timeIcon, TimeAsString);
 	}
 	private void SetTotalErrors(int totalErrors)
 	{
-		TotalErrors_IconInfo.Q<Label>("Value").text = totalErrors.ToString();
-		TotalErrors_IconInfo.Q<VisualElement>("Icon").style.backgroundImage = IconsLibrary.Instance.Core.GetIcon("Error");
+		Texture2D errorsIcon = IconsLibrary.Instance.Core.GetIcon("Error");
+		TotalErrors_IconedLabel = new IconedLabel(errorsIcon, totalErrors.ToString());
 	}
 
 	private void SetTotalWarnings(int totalWarnings)
 	{
-		TotalWarnings_IconInfo.Q<Label>("Value").text = totalWarnings.ToString();
-		TotalWarnings_IconInfo.Q<VisualElement>("Icon").style.backgroundImage = IconsLibrary.Instance.Core.GetIcon("Warning");
+		Texture2D warningIcon = IconsLibrary.Instance.Core.GetIcon("Warning");
+		TotalWarnings_IconedLabel = new IconedLabel(warningIcon, totalWarnings.ToString());
 	}
-
-
-
-
-
 }
