@@ -95,12 +95,11 @@ public class UnityObjectPreview : VisualElement
 	async void UpdateViewContainerAsync()
 	{
 		AssetPreview.GetAssetPreview(TargetObject);
+		previewContainer.style.backgroundImage =  IconsLibrary.Instance.Core.GetIcon("Loading");
 		while (AssetPreview.IsLoadingAssetPreview(TargetObject.GetInstanceID()))
 		{
-			previewContainer.style.backgroundImage =  IconsLibrary.Instance.Core.GetIcon("Loading");
 			await System.Threading.Tasks.Task.Delay(1000);
 		}
-		Debug.Log("Asset preview loaded");
 		UpdatePreviewContainer();
 	}
 	void UpdatePreviewContainer()

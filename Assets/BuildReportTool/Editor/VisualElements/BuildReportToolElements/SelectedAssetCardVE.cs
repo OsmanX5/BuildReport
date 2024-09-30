@@ -107,6 +107,16 @@ public class SelectedAssetCardVE : VisualElement
 			ScenePaths = scenePaths;
 			UpdateSceneUsageInfoAndView();
 		}
+		AddDependancyList();
+	}
+
+	private void AddDependancyList()
+	{
+		string[] dependancies = AssetDatabase.GetDependencies(assetPath);
+		foreach (string dependancy in dependancies)
+		{
+			CustomInfoVE.Add(new Label(dependancy));
+		}
 	}
 
 	void UpdateObjectDataAndView()

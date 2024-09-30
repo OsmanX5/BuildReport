@@ -15,6 +15,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 	AssetsFiltersHandler assetsFiltersHandler;
 	VisualElement SideOptionsVE;
 	VisualElement SelectedAssetCardVE;
+	PieChartWithData typePieChart;
 	Foldout FiltersFoldout;
 	ListView packedAssets_ListView;
 
@@ -31,7 +32,6 @@ public class BuildReportPackedAssetsVE : VisualElement
 		VisualElement result = new VisualElement();
 		visualTree.CloneTree(result);
 		QueryVisualElements(result);
-		CreateOptionesPanel();
 		assetsFiltersHandler.SetBaseVE(FiltersFoldout);
 		SetPackedAssetsInfo(assetsInfoLogic.GetToShowItem());
 		return result.Children().ToList()[0];
@@ -46,10 +46,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 		SelectedAssetCardVE = baseVE.Q<VisualElement>(nameof(SelectedAssetCardVE));
 		SelectedAssetCardVE.style.display = DisplayStyle.None;
 		FiltersFoldout = baseVE.Q<Foldout>(nameof(FiltersFoldout));
-	}
-
-	private void CreateOptionesPanel()
-	{
+		typePieChart = baseVE.Q<PieChartWithData>(nameof(typePieChart));
 		CreatePieChart();
 	}
 
@@ -68,11 +65,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 		colors = colors.Select(colors => new Color(colors.r, colors.g, colors.b, 0.8f)).ToArray();
 		var Types = typesAndData.Select(x => x.Key).ToList();
 		Types.Add(null);
-
-		var pieChart = new PieChartWithData(Types,values.ToArray(), colors);
-		VisualElement pieChartVE = new VisualElement();
-		pieChartVE.Add(pieChart);
-		SideOptionsVE.Add(pieChartVE);		
+		typePieChart.SetData(Types,values.ToArray(), colors);
 	}
 
 	public void UpdateToShowItem(AssetsFiltersData filters)

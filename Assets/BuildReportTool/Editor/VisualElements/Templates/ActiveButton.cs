@@ -37,10 +37,12 @@ public class ActiveButton : Button
 			if (isPressed)
 			{
 				this.style.backgroundColor = pressedColor;
+				this.style.opacity = 1f;
 			}
 			else
 			{
 				this.style.backgroundColor = unPressedColor;
+				this.style.opacity = 0.3f;
 			}
 		}
 	}

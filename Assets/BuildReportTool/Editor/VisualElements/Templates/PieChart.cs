@@ -62,28 +62,39 @@ public class PieChartVE : VisualElement
 public class PieChartWithData : VisualElement
 {
 	PieChartVE m_PieChart;
-    public PieChartWithData(List<Type> Types, float[] precnets, Color[] colors) 
-    {
-        m_PieChart = new PieChartVE(precnets, colors);
-        Add(m_PieChart);
-		for(int i = 0; i < precnets.Length; i++)
-			Add(PieChartElementData(Types[i],precnets[i], colors[i]));
-    }
-	VisualElement PieChartElementData(Type type,float precent, Color color)
+	Foldout m_Foldout;
+	public PieChartWithData()
+	{
+		SetData(new List<Type>() { typeof(Texture2D),typeof(Mesh)},new float[] { 0.6f, 0.4f }, new Color[] { Color.red, Color.blue });
+	}
+	public void SetData(List<Type> Types, float[] precnets, Color[] colors)
+	{
+		Clear();
+		m_PieChart = new PieChartVE(precnets, colors);
+		m_PieChart.style.alignSelf = Align.Center;
+		Add(m_PieChart);
+		m_Foldout = new Foldout();
+		m_Foldout.text = "Data";
+		m_Foldout.value = true;
+		Add(m_Foldout);
+		for (int i = 0; i < precnets.Length; i++)
+			m_Foldout.Add(PieChartElementData(Types[i], precnets[i], colors[i]));
+	}
+	VisualElement PieChartElementData(Type type, float precent, Color color)
 	{
 		VisualElement ve = new VisualElement();
-        ve.style.flexDirection = FlexDirection.Row;
+		ve.style.flexDirection = FlexDirection.Row;
 		ve.style.marginBottom = 5;
 		ve.style.marginLeft = 5;
 		ve.style.marginRight = 5;
 		ve.style.marginTop = 5;
 
-        VisualElement colorBox = new VisualElement();
+		VisualElement colorBox = new VisualElement();
 		colorBox.style.backgroundColor = color;
 		colorBox.style.width = 20;
 		colorBox.style.height = 20;
 		colorBox.style.marginRight = 5;
-		colorBox.style.marginLeft= 5;
+		colorBox.style.marginLeft = 5;
 		colorBox.style.borderRightWidth = 1;
 		colorBox.style.borderRightColor = Color.black;
 		colorBox.style.borderTopWidth = 1;
@@ -96,12 +107,27 @@ public class PieChartWithData : VisualElement
 		ve.Add(colorBox);
 
 		Label TypeNameLabel = new Label();
-		TypeNameLabel.text = type==null? "Others" : type.Name;
-        TypeNameLabel.style.flexGrow = 1;
+		TypeNameLabel.text = type == null ? "Others" : type.Name;
+		TypeNameLabel.style.flexGrow = 1;
 		ve.Add(TypeNameLabel);
 
-        Label precentLabel = new Label($"{(precent*100).ToString("0.0")} %");
+		Label precentLabel = new Label($"{(precent * 100).ToString("0.0")} %");
 		ve.Add(precentLabel);
 		return ve;
+	}
+	public new class UxmlFactory : UxmlFactory<PieChartWithData, UxmlTraits> { }
+	public new class UxmlTraits : VisualElement.UxmlTraits
+	{
+		public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
+		{
+			base.Init(ve, bag, cc);
+			PieChartWithData pieChart = (PieChartWithData)ve;
+
+		}
+	}
+
+	void ApplyingStyels()
+	{
+		this.style.alignSelf = Align.Center;
 	}
 }

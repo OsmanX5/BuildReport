@@ -48,11 +48,13 @@ public class AssetsFiltersHandler : VisualElement
 	public void SetBaseVE(VisualElement baseVE)
 	{
 		FiltersBaseVE = baseVE;
-		QueryElements();
 		SetupSortBy();
 		SetupTypesToShowFilters();
 		SetupAssetsSize();
+		SetupTagSelector();
 	}
+
+
 
 
 	#region SortBy
@@ -124,7 +126,8 @@ public class AssetsFiltersHandler : VisualElement
 		AssetSize_MinMaxSlider.maxValue = assetsInfoLogic.MaxAssetSizeInMB;
 		AssetSize_MinMaxSlider.label = MinMaxSizeAsString;
 		AssetSize_MinMaxSlider.RegisterCallback<ChangeEvent<Vector2>>(MinMiaxValueChanged);
-		
+		assetsFiltersData.MinAssetSize = MinSizeInMB;
+		assetsFiltersData.MaxAssetSize = MaxSizeInMB;
 	}
 
 	private void MinMiaxValueChanged(ChangeEvent<Vector2> newValue)
@@ -140,9 +143,8 @@ public class AssetsFiltersHandler : VisualElement
 
 	#endregion
 
-	void QueryElements()
+	private void SetupTagSelector()
 	{
-		
 		Assets_ActiveButton = FiltersBaseVE.Q<ActiveButton>(nameof(Assets_ActiveButton));
 		Assets_ActiveButton.IsPressed = true;
 		Packges_ActiveButton = FiltersBaseVE.Q<ActiveButton>(nameof(Packges_ActiveButton));
@@ -155,6 +157,16 @@ public class AssetsFiltersHandler : VisualElement
 		tagsSelector.AddButton(Assets_ActiveButton);
 		tagsSelector.AddButton(Packges_ActiveButton);
 		tagsSelector.AddButton(Others_ActiveButton);
+		tagsSelector.OnSelectedTagsChanged += OnSelectedTagsChanged;
+	}
+
+	private void OnSelectedTagsChanged(List<string> list)
+	{
+
+		assetsFiltersData.IncludeAssetsFolder = list.Contains("Assets");
+		assetsFiltersData.IncludePackagesFolder = list.Contains("Packges");
+		assetsFiltersData.IncludeOtherFolders = list.Contains("Others");
+		FiltersDataUpdated();
 	}
 
 	public void FiltersDataUpdated()
@@ -170,7 +182,7 @@ public class AssetsFiltersData
 	public bool OtheTypes;
 	public float MinAssetSize;
 	public float MaxAssetSize;
-	public bool IncludeAssetsFolder;
-	public bool IncludePachagesFolder;
-	public bool IncludeOtherFolders;
+	public bool IncludeAssetsFolder = true;
+	public bool IncludePackagesFolder = false;
+	public bool IncludeOtherFolders = false;
 }

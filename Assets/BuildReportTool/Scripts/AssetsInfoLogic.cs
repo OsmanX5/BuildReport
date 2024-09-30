@@ -87,21 +87,15 @@ public class AssetsInfoLogic
 				continue;
 			if (assetInfo.packedSize.GetSizeInMB() > filtersData.MaxAssetSize)
 				continue;
-            /*if (StartWithTags != null)
-			{
-				bool found = false;
-				foreach (string tag in StartWithTags)
-				{
-					if (assetInfo.sourceAssetPath.StartsWith(tag))
-					{
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					continue;
-			}
-            */
+			bool isAssetFolder = assetInfo.sourceAssetPath.StartsWith("Assets");
+			bool isPackge = assetInfo.sourceAssetPath.StartsWith("Packages");
+			bool isOther = !isAssetFolder && !isPackge;
+			if (isAssetFolder && filtersData.IncludeAssetsFolder == false)
+				continue;
+			if (isPackge && filtersData.IncludePackagesFolder == false)
+				continue;
+			if (isOther && filtersData.IncludeOtherFolders == false)
+				continue;
 			toShowAssetsInfo[addedAssets] = assetInfo;
 			addedAssets++;
 		}
