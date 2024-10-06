@@ -19,9 +19,9 @@
                     <ui:Label tabindex="-1" text="Include Size" parse-escape-sequences="true" display-tooltip-when-elided="true" />
                     <ui:MinMaxSlider min-value="10" max-value="12" low-limit="-10" high-limit="40" name="AssetSize_MinMaxSlider" style="flex-direction: column-reverse; -unity-text-align: middle-center;" />
                 </ui:Foldout>
-                <ui:ListView name="packedAssets_ListView" header-title="Packed Assets" show-foldout-header="false" show-add-remove-footer="false" show-bound-collection-size="true" virtualization-method="FixedHeight" fixed-item-height="30" class="BuildReportTool-floatBox" style="flex-grow: 1; flex-wrap: wrap;" />
+                <ui:VisualElement name="packedAssetsListViewHolderVE" class="BuildReportTool-floatBox" style="flex-grow: 1;" />
             </ui:VisualElement>
-            <ui:ScrollView style="flex-basis: 220px; flex-shrink: 0;">
+            <ui:ScrollView style="flex-basis: 250px; flex-shrink: 0; flex-grow: 1;">
                 <ui:VisualElement name="SideOptionsVE" style="flex-grow: 1; flex-basis: auto;">
                     <ui:VisualElement name="SelectedAssetCardVE" style="flex-grow: 0;">
                         <ui:Instance template="SelectedAssetCardVE" name="SelectedAssetCardVE" />

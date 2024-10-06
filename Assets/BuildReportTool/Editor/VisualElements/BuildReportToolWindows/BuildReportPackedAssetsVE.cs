@@ -17,6 +17,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 	VisualElement SelectedAssetCardVE;
 	PieChartWithData typePieChart;
 	Foldout FiltersFoldout;
+	VisualElement packedAssetsListViewHolderVE;
 	ListView packedAssets_ListView;
 
 	public BuildReportPackedAssetsVE(BuildReport buildReport)
@@ -41,7 +42,7 @@ public class BuildReportPackedAssetsVE : VisualElement
 
 	public void QueryVisualElements(VisualElement baseVE)
 	{
-		packedAssets_ListView = baseVE.Q<ListView>(nameof(packedAssets_ListView));
+		packedAssetsListViewHolderVE = baseVE.Q<VisualElement>(nameof(packedAssetsListViewHolderVE));
 		SideOptionsVE = baseVE.Q<VisualElement>(nameof(SideOptionsVE));
 		SelectedAssetCardVE = baseVE.Q<VisualElement>(nameof(SelectedAssetCardVE));
 		SelectedAssetCardVE.style.display = DisplayStyle.None;
@@ -75,12 +76,25 @@ public class BuildReportPackedAssetsVE : VisualElement
 	}
 	void SetPackedAssetsInfo(PackedAssetInfo[] assetsInfos)
 	{
+		packedAssetsListViewHolderVE.Clear();
+
+		packedAssets_ListView = new ListView();
+		packedAssets_ListView.fixedItemHeight = 30;
 		packedAssets_ListView.itemsSource = assetsInfos;
 		packedAssets_ListView.makeItem = packedAssetListViewItemCreator;
 		packedAssets_ListView.bindItem = packedAssetListViewItemBinder;
-		packedAssets_ListView.selectedIndicesChanged += OnItemClicked;
+		packedAssets_ListView.selectionChanged += OnItemClicked;
 		packedAssets_ListView.itemsChosen += OnAssetFromListViewChosen;
+		packedAssets_ListView.Rebuild();
+		packedAssetsListViewHolderVE.Add(packedAssets_ListView);
 	}
+
+	private void OnItemClicked(IEnumerable<object> enumerable)
+	{
+		PackedAssetInfo info = (PackedAssetInfo)enumerable.First();
+		UpdateTheAssetCardWithThisInde(info);
+	}
+
 	private VisualElement packedAssetListViewItemCreator()
 	{
 		VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(packedAssetInfoItemVEpath);
@@ -131,17 +145,9 @@ public class BuildReportPackedAssetsVE : VisualElement
 		ScenesCount_Label.text = sceneUsage.ToString();
 
 	}
-	private void OnItemClicked(IEnumerable<int> enumerable)
+	private void UpdateTheAssetCardWithThisInde(PackedAssetInfo info)
 	{
 		SelectedAssetCardVE.style.display = DisplayStyle.Flex;
-		foreach (int index in enumerable)
-		{
-			UpdateTheAssetCardWithThisInde(index);
-		}
-	}
-	private void UpdateTheAssetCardWithThisInde(int index)
-	{
-		PackedAssetInfo info = (PackedAssetInfo)packedAssets_ListView.itemsSource[index];
 		string[] scenes = assetsInfoLogic.GetScenesForAsset(info.sourceAssetPath);
 		SelectedAssetCardVE newCard = new SelectedAssetCardVE();
 		newCard.SetData(info, scenes);
@@ -188,52 +194,4 @@ public class BuildReportPackedAssetsVE : VisualElement
 		{typeof(Font), "Font"},
 		{typeof(TextAsset), "Text"},
 	};
-}
-class SceneUsageListItemVE : VisualElement
-{
-	public SceneUsageListItemVE()
-	{
-
-	}
-	public void SetData(string sceneSTR)
-	{
-		this.Clear();
-		string[] Splited = sceneSTR.Split('(');
-		string sceneNumber = Splited[0];
-		string scenePath = Splited[1].Replace(")", "");
-		string sceneName = scenePath.Split('/').Last();
-
-		Label NumberLabel = new Label(sceneNumber);
-		NumberLabel.style.backgroundColor = Color.white;
-		NumberLabel.style.color = Color.black;
-		int margin = 2;
-		NumberLabel.style.marginBottom = margin;
-		NumberLabel.style.marginTop = margin;
-		NumberLabel.style.marginLeft = margin;
-		NumberLabel.style.marginRight = margin;
-		NumberLabel.style.paddingBottom = margin;
-		NumberLabel.style.paddingTop = margin;
-		NumberLabel.style.paddingLeft = margin;
-		NumberLabel.style.paddingRight = margin;
-
-
-		Label NameLabel = new Label(sceneName);
-		NameLabel.style.flexGrow = 1;
-		NameLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
-		Label PathLabel = new Label(scenePath);
-		PathLabel.style.flexGrow = 1;
-		PathLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
-		this.style.flexDirection = FlexDirection.Row;
-
-
-		VisualElement UnityIcon = new VisualElement();
-		UnityIcon.style.width = 22;
-		UnityIcon.style.height = 22;
-		Texture2D icon = IconsLibrary.Instance.Core.GetIcon("UnityWhite");
-		UnityIcon.style.backgroundImage = icon;
-		Add(UnityIcon);
-		Add(NameLabel);
-		Add(NumberLabel);
-		Add(PathLabel);
-	}
 }

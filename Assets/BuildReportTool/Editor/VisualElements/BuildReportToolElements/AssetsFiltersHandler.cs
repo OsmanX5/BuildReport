@@ -53,10 +53,6 @@ public class AssetsFiltersHandler : VisualElement
 		SetupAssetsSize();
 		SetupTagSelector();
 	}
-
-
-
-
 	#region SortBy
 
 	void SetupSortBy()
@@ -130,17 +126,17 @@ public class AssetsFiltersHandler : VisualElement
 		assetsFiltersData.MaxAssetSize = MaxSizeInMB;
 	}
 
+	float minDelta = 0.01f;
 	private void MinMiaxValueChanged(ChangeEvent<Vector2> newValue)
 	{
+		Vector2 oldValues = new Vector2(assetsFiltersData.MinAssetSize, assetsFiltersData.MaxAssetSize);
+		if(	Vector2.Distance(newValue.newValue, oldValues) < minDelta)
+            return;
 		AssetSize_MinMaxSlider.label = MinMaxSizeAsString;
 		assetsFiltersData.MinAssetSize = MinSizeInMB;
 		assetsFiltersData.MaxAssetSize = MaxSizeInMB;
 		FiltersDataUpdated();
 	}
-
-
-
-
 	#endregion
 
 	private void SetupTagSelector()

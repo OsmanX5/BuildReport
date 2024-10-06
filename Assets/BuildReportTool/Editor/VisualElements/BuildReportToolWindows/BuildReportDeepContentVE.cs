@@ -24,6 +24,12 @@ public class BuildReportDeepContentVE
 	ToolbarButton PackedAssets_ToolbarBtn;
 	VisualElement PackedAssets_Content;
 
+	ToolbarButton SceneReferences_ToolbarBtn;
+	VisualElement SceneReferences_Content;
+
+	ToolbarButton NotUsedAssets_ToolbarBtn;
+	VisualElement NotUsedAssets_Content;
+
 	Dictionary<ToolbarButton , VisualElement> toolbarButtonsContentDict;
 	public BuildReportDeepContentVE(BuildReport report)
 	{
@@ -47,6 +53,8 @@ public class BuildReportDeepContentVE
 		ContentType_Toolbar = baseVE.Q<Toolbar>(nameof(ContentType_Toolbar));
 		BuildSteps_ToolbarBtn = ContentType_Toolbar.Q<ToolbarButton>(nameof(BuildSteps_ToolbarBtn));
 		PackedAssets_ToolbarBtn = ContentType_Toolbar.Q<ToolbarButton>(nameof(PackedAssets_ToolbarBtn));
+		SceneReferences_ToolbarBtn = ContentType_Toolbar.Q<ToolbarButton>(nameof(SceneReferences_ToolbarBtn));
+		NotUsedAssets_ToolbarBtn = ContentType_Toolbar.Q<ToolbarButton>(nameof(NotUsedAssets_ToolbarBtn));
 		Content = baseVE.Q<VisualElement>(nameof(Content));
 	}
 	void UpdateContentVE()
@@ -64,12 +72,36 @@ public class BuildReportDeepContentVE
 				PackedAssets_Content = packedAssetsVE.GetVE();
 				Content.Add(PackedAssets_Content);
 				break;
+			case ContentType.SceneReferences:
+				BuildReportScenesRefrance sceneReferencesVE = new BuildReportScenesRefrance(report);
+				SceneReferences_Content = sceneReferencesVE.GetVE();
+				Content.Add(SceneReferences_Content);
+				break;
+			case ContentType.NotUsedAssets:
+				BuildReportNotUsedAssetsVE notUsedAssetsVE = new BuildReportNotUsedAssetsVE(report);
+				NotUsedAssets_Content = notUsedAssetsVE.GetVE();
+				Content.Add(NotUsedAssets_Content);
+				break;
 		}
 	}
 	public void RegisterEvents()
 	{
 		BuildSteps_ToolbarBtn.RegisterCallback<ClickEvent>(OnBuildStepsClick);
 		PackedAssets_ToolbarBtn.RegisterCallback<ClickEvent>(OnPackedAssetsClick);
+		SceneReferences_ToolbarBtn.RegisterCallback<ClickEvent>(OnSceneReferencesClick);
+		NotUsedAssets_ToolbarBtn.RegisterCallback<ClickEvent>(OnNotUsedAssetsClick);
+	}
+
+	private void OnNotUsedAssetsClick(ClickEvent evt)
+	{
+		selectedContetType = ContentType.NotUsedAssets;
+		UpdateContentVE();
+	}
+
+	private void OnSceneReferencesClick(ClickEvent evt)
+	{
+		selectedContetType = ContentType.SceneReferences;
+		UpdateContentVE();
 	}
 
 	private void OnPackedAssetsClick(ClickEvent evt)
@@ -86,6 +118,8 @@ public class BuildReportDeepContentVE
 	enum ContentType
 	{
 		BuildSteps,
-		PackedAssets
+		PackedAssets,
+		SceneReferences,
+		NotUsedAssets
 	}
 }

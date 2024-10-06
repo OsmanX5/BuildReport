@@ -3,7 +3,8 @@
         <uie:Toolbar name="ContentType_Toolbar" style="justify-content: center; background-color: rgba(60, 60, 60, 0.28); height: 32px;">
             <uie:ToolbarButton text="Steps" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BuildSteps_ToolbarBtn" style="margin-right: 5px; margin-left: 5px; width: 80px; -unity-text-align: middle-center; font-size: 16px;" />
             <uie:ToolbarButton text="Assets" parse-escape-sequences="true" display-tooltip-when-elided="true" name="PackedAssets_ToolbarBtn" tabindex="1" style="margin-right: 5px; margin-left: 5px; width: 80px; font-size: 16px; -unity-text-align: middle-center;" />
-            <uie:ToolbarButton text="Scene(Soon)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SceneUsingAssets_ToolbarBtn" tabindex="1" style="margin-right: 5px; margin-left: 5px; width: 80px; font-size: 12px; -unity-text-align: middle-center;" />
+            <uie:ToolbarButton text="Scenes" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SceneReferences_ToolbarBtn" tabindex="1" style="margin-right: 5px; margin-left: 5px; width: 80px; font-size: 16px; -unity-text-align: middle-center;" />
+            <uie:ToolbarButton text="Not used" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NotUsedAssets_ToolbarBtn" tabindex="1" style="margin-right: 5px; margin-left: 5px; width: 80px; font-size: 16px; -unity-text-align: middle-center;" />
         </uie:Toolbar>
         <ui:VisualElement name="Content" style="flex-grow: 1;" />
     </ui:VisualElement>
